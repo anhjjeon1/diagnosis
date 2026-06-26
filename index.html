@@ -172,7 +172,7 @@ footer .ph{color:var(--brand-700);font-weight:800}
   <section class="card collapsible" id="condCard">
     <div class="card-head" id="condHead">
       <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></div>
-      <div><h2>현장 정보</h2><div class="hint">현장당 1회 입력</div></div>
+      <div><h2>현장 정보</h2></div>
       <span class="chev">▼</span>
     </div>
     <div class="card-body">
@@ -299,7 +299,7 @@ function render(){
       +'<button class="del-btn" data-del="'+loc.id+'" aria-label="삭제"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div>'
       +'<div class="loc-pad"><div class="seg-label" style="color:var(--ink-2);margin-top:0"><span class="dot before"></span>점검창호</div>'
       +'<div class="photo-row"><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(loc.placeLPhoto,"점검창호","placeL",loc.id)+'</div></div><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(loc.placeRPhoto,"점검창호","placeR",loc.id)+'</div></div></div>'
-      +'<div class="seg-label before"><span class="stepno">3</span>소음 측정 · 평균소음도 LAeq 기준 (사진 첨부 시 dB 자동인식)</div>'
+      +'<div class="seg-label before"><span class="stepno">3</span>소음 측정 · 평균소음도 LAeq 기준</div>'
       +'<div class="photo-row"><div class="photo-cell"><div class="mini-lab">수리전 소음측정</div><div class="photo-slot ratio34">'+photoHtml(loc.beforePhoto,"수리 전","before",loc.id)+'</div></div><div class="photo-cell"><div class="mini-lab">수리후 소음측정</div><div class="photo-slot ratio34">'+photoHtml(loc.afterPhoto,"수리 후","after",loc.id)+'</div></div></div>'
       +'<div class="onoff" style="margin-top:9px"><div><div class="mini-lab">수리 전 dB (LAeq)</div><input class="db" inputmode="decimal" placeholder="dB" value="'+escapeHtml(loc.before[0])+'" data-id="'+loc.id+'" data-f="before" data-k="0"></div><div><div class="mini-lab">수리 후 dB (LAeq)</div><input class="db" inputmode="decimal" placeholder="dB" value="'+escapeHtml(loc.after[0])+'" data-id="'+loc.id+'" data-f="after" data-k="0"></div></div>'
       +'<div class="loc-res empty" id="res_'+loc.id+'"></div>'
