@@ -84,7 +84,7 @@ header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.72);backdro
 .photo-cell .mini-lab{margin:0 0 5px}
 .photo-slot.ratio34{aspect-ratio:1/1}
 .photo-slot.ratio34 .photo-btn{height:100%;flex-direction:column;gap:3px;font-size:12px;line-height:1.35}
-.cam{font-size:24px;line-height:1}
+.cam{font-size:12px;line-height:1}
 .photo-slot.ratio34 .photo-thumb{height:100%}
 .photo-slot.ratio34 .photo-thumb img{height:100%;max-height:none}
 .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
@@ -295,7 +295,7 @@ function render(){
     return '<div class="loc"><div class="loc-head"><span class="loc-no">2</span>'
       +'<input class="name-inp" value="'+escapeHtml(loc.name)+'" placeholder="위치명 (음성 또는 입력)" data-id="'+loc.id+'" data-f="name">'
       +'<button class="mic-btn" data-mic="'+loc.id+'" aria-label="음성 입력"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10v1a7 7 0 0 0 14 0v-1"/><line x1="12" y1="19" x2="12" y2="22"/></svg></button>'
-      +'<button class="del-btn" data-del="'+loc.id+'" aria-label="삭제"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div>'
+      +'</div>'
       +'<div class="loc-pad"><div class="seg-label" style="color:var(--ink-2);margin-top:0"><span class="dot before"></span>점검창호</div>'
       +'<div class="photo-row"><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(loc.placeLPhoto,"점검창호","placeL",loc.id)+'</div></div><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(loc.placeRPhoto,"점검창호","placeR",loc.id)+'</div></div></div>'
       +'<div class="seg-label before"><span class="stepno">3</span>소음 측정 · 평균소음도 LAeq 기준</div>'
