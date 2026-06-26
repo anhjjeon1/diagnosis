@@ -66,8 +66,8 @@ header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.72);backdro
 .loc-head .name-inp{flex:1;border:none;background:transparent;font-size:13px;font-weight:740;padding:4px 4px;color:var(--ink)}
 .loc-head .name-inp:focus{outline:none}
 .del-btn{flex:0 0 auto;width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--bad);display:grid;place-items:center}
-.loc-pad{padding:13px}
-.seg-label{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;margin:10px 0 7px;letter-spacing:.02em}
+.loc-pad{padding:11px}
+.seg-label{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800;margin:6px 0 4px;letter-spacing:.02em}
 .seg-label:first-child{margin-top:0}
 .dot{width:9px;height:9px;border-radius:3px;flex:0 0 auto}
 .dot.before{background:var(--neutral)}
@@ -82,8 +82,8 @@ header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.72);backdro
 .onoff .mini-lab{margin:0 0 4px}
 .dbcell{display:flex;align-items:center;gap:5px}
 .dbcell .mini-lab{margin:0;white-space:nowrap;font-size:12.5px;line-height:1.15}
-.dbcell .db{width:62px;flex:0 0 auto;padding:7px 4px;font-size:14px}
-.photo-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}
+.dbcell .db{width:62px;flex:0 0 auto;padding:3px 4px;font-size:14px}
+.photo-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:6px}
 .photo-cell .mini-lab{margin:0 0 5px}
 .photo-slot.ratio34{aspect-ratio:1/1}
 .photo-slot.ratio34 .photo-btn{height:100%;flex-direction:column;gap:3px;font-size:12px;line-height:1.35}
@@ -95,7 +95,7 @@ header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.72);backdro
 .db{width:100%;padding:3px 4px;text-align:center;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;border:1.5px solid var(--line);border-radius:var(--r-sm);background:var(--surface);transition:border-color .15s,box-shadow .15s}
 .db::placeholder{color:#C4CCC7;font-weight:500}
 .db:focus{outline:none;border-color:var(--brand);box-shadow:var(--ring)}
-.loc-res{display:flex;align-items:center;gap:10px;margin-top:13px;padding:12px 13px;border-radius:var(--r-sm);background:var(--surface-2);border:1px solid var(--line-2)}
+.loc-res{display:flex;align-items:center;gap:10px;margin-top:8px;padding:10px 12px;border-radius:var(--r-sm);background:var(--surface-2);border:1px solid var(--line-2)}
 .loc-res .flow{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums}
 .loc-res .v{font-size:16px;font-weight:800;color:var(--ink)}
 .loc-res .arrow{color:var(--ink-3);font-size:13px}
@@ -304,7 +304,7 @@ function render(){
       +'<div class="photo-row"><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(loc.placeLPhoto,"점검창호","placeL",loc.id)+'</div></div><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(loc.placeRPhoto,"점검창호","placeR",loc.id)+'</div></div></div>'
       +'<div class="seg-label before"><span class="stepno">3</span>소음 측정 · 평균소음도 LAeq 기준</div>'
       +'<div class="photo-row"><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(loc.beforePhoto,"수리 전","before",loc.id,"수리전 소음측정")+'</div></div><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(loc.afterPhoto,"수리 후","after",loc.id,"수리후 소음측정")+'</div></div></div>'
-      +'<div class="onoff" style="margin-top:9px"><div class="dbcell"><span class="mini-lab">수리전 (LAeq)</span><input class="db" inputmode="decimal" placeholder="dB" value="'+escapeHtml(loc.before[0])+'" data-id="'+loc.id+'" data-f="before" data-k="0"></div><div class="dbcell"><span class="mini-lab">수리후 (LAeq)</span><input class="db" inputmode="decimal" placeholder="dB" value="'+escapeHtml(loc.after[0])+'" data-id="'+loc.id+'" data-f="after" data-k="0"></div></div>'
+      +'<div class="onoff" style="margin-top:5px"><div class="dbcell"><span class="mini-lab">수리전 (LAeq)</span><input class="db" inputmode="decimal" placeholder="dB" value="'+escapeHtml(loc.before[0])+'" data-id="'+loc.id+'" data-f="before" data-k="0"></div><div class="dbcell"><span class="mini-lab">수리후 (LAeq)</span><input class="db" inputmode="decimal" placeholder="dB" value="'+escapeHtml(loc.after[0])+'" data-id="'+loc.id+'" data-f="after" data-k="0"></div></div>'
       +'<div class="loc-res empty" id="res_'+loc.id+'"></div>'
       +'<div class="seg-label after"><span class="stepno">4</span>초음파 카메라 측정</div>'
       +loc.us.map(function(p,ui){return (ui>0?'<div class="us-pair-head"><span>초음파 측정 '+(ui+1)+'</span><button data-usdel="'+ui+'" data-id="'+loc.id+'">✕ 행 삭제</button></div>':'')
