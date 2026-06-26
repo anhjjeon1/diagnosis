@@ -80,6 +80,9 @@ header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.72);backdro
 @keyframes micpulse{0%,100%{opacity:1}50%{opacity:.55}}
 .onoff{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:4px}
 .onoff .mini-lab{margin:0 0 4px}
+.dbcell{display:flex;align-items:center;gap:5px}
+.dbcell .mini-lab{margin:0;white-space:nowrap;font-size:9.5px;line-height:1.15}
+.dbcell .db{width:48px;flex:0 0 auto;padding:4px 2px}
 .photo-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}
 .photo-cell .mini-lab{margin:0 0 5px}
 .photo-slot.ratio34{aspect-ratio:1/1}
@@ -300,7 +303,7 @@ function render(){
       +'<div class="photo-row"><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(loc.placeLPhoto,"점검창호","placeL",loc.id)+'</div></div><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(loc.placeRPhoto,"점검창호","placeR",loc.id)+'</div></div></div>'
       +'<div class="seg-label before"><span class="stepno">3</span>소음 측정 · 평균소음도 LAeq 기준</div>'
       +'<div class="photo-row"><div class="photo-cell"><div class="mini-lab">수리전 소음측정</div><div class="photo-slot ratio34">'+photoHtml(loc.beforePhoto,"수리 전","before",loc.id)+'</div></div><div class="photo-cell"><div class="mini-lab">수리후 소음측정</div><div class="photo-slot ratio34">'+photoHtml(loc.afterPhoto,"수리 후","after",loc.id)+'</div></div></div>'
-      +'<div class="onoff" style="margin-top:9px"><div><div class="mini-lab">수리 전 dB (LAeq)</div><input class="db" inputmode="decimal" placeholder="dB" value="'+escapeHtml(loc.before[0])+'" data-id="'+loc.id+'" data-f="before" data-k="0"></div><div><div class="mini-lab">수리 후 dB (LAeq)</div><input class="db" inputmode="decimal" placeholder="dB" value="'+escapeHtml(loc.after[0])+'" data-id="'+loc.id+'" data-f="after" data-k="0"></div></div>'
+      +'<div class="onoff" style="margin-top:9px"><div class="dbcell"><span class="mini-lab">수리 전 dB (LAeq)</span><input class="db" inputmode="decimal" placeholder="dB" value="'+escapeHtml(loc.before[0])+'" data-id="'+loc.id+'" data-f="before" data-k="0"></div><div class="dbcell"><span class="mini-lab">수리 후 dB (LAeq)</span><input class="db" inputmode="decimal" placeholder="dB" value="'+escapeHtml(loc.after[0])+'" data-id="'+loc.id+'" data-f="after" data-k="0"></div></div>'
       +'<div class="loc-res empty" id="res_'+loc.id+'"></div>'
       +'<div class="seg-label after"><span class="stepno">4</span>초음파 카메라 측정</div>'
       +loc.us.map(function(p,ui){return (ui>0?'<div class="us-pair-head"><span>초음파 측정 '+(ui+1)+'</span><button data-usdel="'+ui+'" data-id="'+loc.id+'">✕ 행 삭제</button></div>':'')
