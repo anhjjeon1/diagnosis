@@ -217,6 +217,8 @@ footer .ph{color:var(--brand-700);font-weight:800}
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 var CONFIG={MIN_HEADROOM:10,IMP_STRONG:6,IMP_GOOD:3,PHONE_ERR:3,
 rules:[
@@ -489,15 +491,32 @@ function buildPrint(){
     +(function(){var r=aiReport();if(!r)return"";return '<div class="p-ai"><div class="t">AI 분석 · 종합 '+r.grade+'</div><ul>'+r.bullets.map(function(s){return '<li>'+escapeHtml(s)+'</li>'}).join("")+'</ul></div>';})()
     +'<div class="p-notice">※ '+CONFIG.NOTICE+'</div><div class="p-foot">'+CONFIG.COMPANY+'</div>';
 }
+function pdfName(){
+  var s=($("#c_site").value||"현장").replace(/[\\/:*?"<>|]+/g,"").replace(/\s+/g," ").trim().slice(0,40);
+  var d=($("#c_date").value||today());
+  return "청개구리샤시_기밀성능_"+s+"_"+d+".pdf";
+}
 function savePDF(){
   var valid=locations.map(computeLoc).filter(function(c){return c.ready});
   if(!valid.length){toast("측정값(소음 dB)이 입력된 위치가 최소 1곳 필요합니다");return}
+  if(!window.jspdf||!window.html2canvas){toast("PDF 모듈을 불러오는 중입니다. 잠시 후 다시 눌러주세요");return}
   buildPrint();sendToSheet();
-  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
-  toast(isIOS?"공유 메뉴에서 'PDF로 저장'을 선택하세요":"인쇄 창에서 'PDF로 저장'을 선택하세요");
-  // 모바일은 사용자 클릭 직후에 호출해야 인쇄 창이 뜸(지연 호출 금지)
-  try{ window.print(); }
-  catch(e){ toast("이 브라우저에서는 인쇄가 막혀 있어요. Chrome으로 열어 주세요"); }
+  toast("PDF를 만드는 중…");
+  var area=$("#print-area");
+  area.style.cssText="display:block;position:fixed;left:-10000px;top:0;width:760px;background:#fff;padding:24px;box-sizing:border-box;color:#111";
+  window.html2canvas(area,{scale:2,backgroundColor:"#ffffff",useCORS:true}).then(function(canvas){
+    area.style.cssText="display:none";
+    var img=canvas.toDataURL("image/jpeg",0.92);
+    var pdf=new window.jspdf.jsPDF("p","mm","a4");
+    var pw=pdf.internal.pageSize.getWidth(), ph=pdf.internal.pageSize.getHeight();
+    var iw=pw, ih=canvas.height*pw/canvas.width;
+    var pos=0, left=ih;
+    pdf.addImage(img,"JPEG",0,pos,iw,ih);
+    left-=ph;
+    while(left>0){ pos=left-ih; pdf.addPage(); pdf.addImage(img,"JPEG",0,pos,iw,ih); left-=ph; }
+    pdf.save(pdfName());
+    toast("PDF 저장 완료 — '내 파일 > 다운로드' 폴더를 확인하세요");
+  }).catch(function(e){ area.style.cssText="display:none"; toast("PDF 생성 실패 — 다시 시도해 주세요"); });
 }
 
 function resetAll(){
