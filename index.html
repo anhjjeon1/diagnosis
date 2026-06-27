@@ -169,7 +169,7 @@ footer .ph{color:var(--brand-700);font-weight:800}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 기밀성능 측정앱</h1><span class="ver">V 1.0</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 기밀성능 측정앱</h1><span class="ver">V 1.1</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -489,7 +489,7 @@ function buildPrint(){
     +'<div class="p-summary"><div><div style="font-size:11px;color:#33493b">평균 개선량</div><div class="big">'+avgImp+' dB</div></div><div class="cm">'+escapeHtml(comment(parseFloat(avgImp)||0))+'</div></div>'
     +'<table><thead><tr><th style="text-align:left">위치</th><th>수리 전</th><th>수리 후</th><th>개선(dB)</th><th>판정</th></tr></thead><tbody>'+(tableRows||'<tr><td colspan="5">입력된 위치 없음</td></tr>')+'</tbody></table>'
     +locations.filter(function(loc){return loc.placeLPhoto||loc.placeRPhoto||loc.beforePhoto||loc.afterPhoto||(loc.us&&loc.us.some(function(p){return p.b||p.a}))}).map(function(loc){var us="";(loc.us||[]).forEach(function(p,ui){var sfx=(loc.us.length>1?(ui+1):"");if(p.b)us+='<div class="p-photo"><img src="'+p.b+'"><div class="cap">초음파 전'+sfx+'</div></div>';if(p.a)us+='<div class="p-photo"><img src="'+p.a+'"><div class="cap">초음파 후'+sfx+'</div></div>';});return '<div class="p-ploc"><div class="nm">'+escapeHtml(loc.name||"-")+'</div><div class="p-photos">'+(loc.placeLPhoto?'<div class="p-photo"><img src="'+loc.placeLPhoto+'"><div class="cap">현장 좌</div></div>':'')+(loc.placeRPhoto?'<div class="p-photo"><img src="'+loc.placeRPhoto+'"><div class="cap">현장 우</div></div>':'')+(loc.beforePhoto?'<div class="p-photo"><img src="'+loc.beforePhoto+'"><div class="cap">수리 전(소음)</div></div>':'')+(loc.afterPhoto?'<div class="p-photo"><img src="'+loc.afterPhoto+'"><div class="cap">수리 후(소음)</div></div>':'')+us+'</div></div>'}).join("")
-    +(function(){var r=aiReport();if(!r)return"";return '<div class="p-ai"><div class="t">AI 분석 · 종합 '+r.grade+'</div><ul>'+r.bullets.map(function(s){return '<li>'+escapeHtml(s)+'</li>'}).join("")+'</ul></div>';})()
+    +(function(){var r=aiReport();if(!r)return"";return '<div class="p-ai"><div class="t">AI 분석 · 종합 '+r.grade+'</div><ul>'+(r.pro||r.cust||[]).map(function(s){return '<li>'+escapeHtml(s)+'</li>'}).join("")+'</ul></div>';})()
     +'<div class="p-notice">※ '+CONFIG.NOTICE+'</div><div class="p-foot">'+CONFIG.COMPANY+'</div>';
 }
 function pdfName(){
