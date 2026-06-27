@@ -491,10 +491,13 @@ function buildPrint(){
 }
 function savePDF(){
   var valid=locations.map(computeLoc).filter(function(c){return c.ready});
-  if(!valid.length){toast("측정값이 입력된 위치가 최소 1곳 필요합니다");return}
+  if(!valid.length){toast("측정값(소음 dB)이 입력된 위치가 최소 1곳 필요합니다");return}
   buildPrint();sendToSheet();
   var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
-  setTimeout(function(){window.print();if(isIOS)toast("공유 → 'PDF로 저장' 또는 인쇄를 선택하세요")},200);
+  toast(isIOS?"공유 메뉴에서 'PDF로 저장'을 선택하세요":"인쇄 창에서 'PDF로 저장'을 선택하세요");
+  // 모바일은 사용자 클릭 직후에 호출해야 인쇄 창이 뜸(지연 호출 금지)
+  try{ window.print(); }
+  catch(e){ toast("이 브라우저에서는 인쇄가 막혀 있어요. Chrome으로 열어 주세요"); }
 }
 
 function resetAll(){
