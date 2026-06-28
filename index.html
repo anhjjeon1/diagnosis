@@ -169,7 +169,7 @@ footer .ph{color:var(--brand-700);font-weight:800}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 기밀성능 측정앱</h1><span class="ver">V 1.9</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 기밀성능 측정앱</h1><span class="ver">V 2.0</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -258,36 +258,29 @@ function getOCR(){
 }
 function ocrPhoto(dataUrl,cb){
   var p=getOCR();if(!p){cb(null);return}
+  var SCALE={20:1,40:1,60:1,80:1,100:1,120:1};
   var im=new Image();
   im.onload=function(){
-    var cv=document.createElement("canvas");cv.width=Math.round(im.width*1.6);cv.height=Math.round(im.height*1.6);
-    cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);
-    var up=cv.toDataURL("image/png");
-    p.then(function(w){return w.recognize(up)}).then(function(res){
-      var d=res.data||{};
-      // 단어 목록 수집 (버전별 구조 대응)
-      var words=[];
-      if(d.words&&d.words.length){words=d.words;}
-      else if(d.blocks){d.blocks.forEach(function(b){(b.paragraphs||[]).forEach(function(pp){(pp.lines||[]).forEach(function(ln){(ln.words||[]).forEach(function(wd){words.push(wd);});});});});}
-      // 1) 가장 큰 글씨(시계 중앙 dB 수치) 우선 — bbox 높이로 판별
-      var best=null;
-      words.forEach(function(wd){
-        var t=((wd.text||"")+"").replace(/[^0-9.]/g,"");
-        if(!/^\d{2,3}$/.test(t))return;
-        var v=parseFloat(t);if(isNaN(v)||v<20||v>120)return;
-        var bb=wd.bbox||{};var ht=(bb.y1||0)-(bb.y0||0);
-        if(!best||ht>best.h)best={v:v,h:ht};
+    var W=im.width,H=im.height;
+    function recog(sx,sy,sw,sh,scale,done){
+      var cv=document.createElement("canvas");cv.width=Math.round(sw*scale);cv.height=Math.round(sh*scale);
+      cv.getContext("2d").drawImage(im,sx,sy,sw,sh,0,0,cv.width,cv.height);
+      p.then(function(w){return w.recognize(cv.toDataURL("image/png"))}).then(function(res){
+        done(((res.data&&res.data.text)||"").match(/\d{2,3}/g)||[]);
+      }).catch(function(){done([]);});
+    }
+    // 1) 게이지 중앙만 크롭 → 큰 숫자만 인식 (눈금/최소·평균·최대 행 제외)
+    recog(Math.round(W*0.27),Math.round(H*0.15),Math.round(W*0.46),Math.round(H*0.42),2.4,function(c){
+      var nums=c.map(parseFloat).filter(function(n){return n>=20&&n<=99&&!SCALE[n]});
+      if(nums.length){cb(Math.round(nums[0]));return;}
+      // 2) 실패 시 전체 이미지에서 (눈금/소수 제외) 중앙값
+      recog(0,0,W,H,1.6,function(a){
+        var all=a.map(parseFloat).filter(function(n){return n>=20&&n<=99&&!SCALE[n]});
+        if(!all.length){cb(null);return}
+        all.sort(function(x,y){return x-y});
+        cb(Math.round(all[Math.floor((all.length-1)/2)]));
       });
-      if(best){cb(Math.round(best.v));return;}
-      // 2) fallback: 소수(평균)·다이얼 눈금 제외 후 중앙값(=중앙 수치 근사)
-      var all=((d.text||"").match(/\d{2,3}(?:\.\d)?/g)||[]).map(parseFloat).filter(function(n){return n>=20&&n<=99});
-      if(!all.length){cb(null);return}
-      var SCALE={20:1,40:1,60:1,80:1,100:1,120:1};
-      var ints=all.filter(function(n){return n%1===0&&!SCALE[n]});
-      if(!ints.length)ints=all;
-      ints.sort(function(a,b){return a-b});
-      cb(Math.round(ints[Math.floor((ints.length-1)/2)]));
-    }).catch(function(){cb(null)});
+    });
   };
   im.onerror=function(){cb(null)};
   im.src=dataUrl;
