@@ -170,7 +170,7 @@ footer .ph{color:var(--brand-700);font-weight:800}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 기밀성능 측정앱</h1><span class="ver">V 2.6</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 기밀성능 측정앱</h1><span class="ver">V 2.7</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -426,7 +426,7 @@ function aiReport(){
     pro.push("[정량] 측정 "+valid.length+"개소, 평균 음압 저감 ΔLp = "+av.toFixed(1)+"dB(상대 비교, 휴대폰 앱 측정 ±"+CONFIG.PHONE_ERR+"dB 오차 포함).");
     pro.push("[최대/최소] 최대 저감 '"+nm(best)+"' "+best.c.imp+"dB(전 "+best.c.bAvg+"→후 "+best.c.aAvg+"dB)"+(valid.length>1?(" · 최소 '"+nm(worst)+"' "+worst.c.imp+"dB"):"")+".");
     pro.push("[판정] 종합 등급 "+grade+". 본 수치는 상대적 차음·기밀 개선 확인용이며 KS F 2292(통기량) 법적 등급과는 별개 지표.");
-    pro.push("[감소 해석] 평균 "+av.toFixed(1)+"dB 저감은 음 에너지 약 "+(av>0?Math.round((1-Math.pow(10,-av/10))*100):0)+"% 감소에 해당하는 차음 개선입니다.");
+    pro.push("[감소 해석] 평균 "+av.toFixed(1)+"dB 저감은 음 에너지(소리 세기) 약 "+(av>0?Math.round((1-Math.pow(10,-av/10))*100):0)+"% 감소에 해당합니다. 다만 이는 에너지 기준이며, 귀로 느끼는 체감 음량은 이보다 완만합니다(대략 10dB 감소가 체감상 절반 수준). 체감으로는 "+feel_(av));
     pro.push("[측정 특성] dB 절대값은 수리 전·후를 빠르게 비교하기 위해 창짝 사이에 인위적 음원(핑크노이즈 등)을 둔 상대 비교값이라, 수리 후에도 수치 자체는 높게 나옵니다. 이는 실제 생활소음 수준이 아니며 주거 소음 권장치(예: 35~40dB)와 직접 비교하거나 '수치가 높으니 보강 필요'로 해석하지 않습니다. 평가는 오직 수리 전·후 감소량(ΔdB)으로 판단합니다.");
     if(neg.length)pro.push("[이상] '"+neg.map(nm).join("', '")+"' 수리 후 음압 증가 → 시공·재측정 재검 필요.");
   }else{
