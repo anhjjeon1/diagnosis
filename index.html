@@ -170,7 +170,7 @@ footer .ph{color:var(--brand-700);font-weight:800}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 기밀성능 측정앱</h1><span class="ver">V 2.3</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 기밀성능 측정앱</h1><span class="ver">V 2.4</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -263,23 +263,40 @@ function ocrPhoto(dataUrl,cb){
   var im=new Image();
   im.onload=function(){
     var W=im.width,H=im.height;
-    function recog(sx,sy,sw,sh,scale,done){
-      var cv=document.createElement("canvas");cv.width=Math.round(sw*scale);cv.height=Math.round(sh*scale);
-      cv.getContext("2d").drawImage(im,sx,sy,sw,sh,0,0,cv.width,cv.height);
+    function recog(sx,sy,sw,sh,scale,binar,done){
+      var cw=Math.round(sw*scale),ch=Math.round(sh*scale);
+      var cv=document.createElement("canvas");cv.width=cw;cv.height=ch;
+      var ctx=cv.getContext("2d");ctx.drawImage(im,sx,sy,sw,sh,0,0,cw,ch);
+      if(binar){
+        try{
+          var id=ctx.getImageData(0,0,cw,ch),px=id.data;
+          for(var i=0;i<px.length;i+=4){
+            var g=0.299*px[i]+0.587*px[i+1]+0.114*px[i+2];
+            var v=g>150?0:255; // 밝은(흰) 글씨→검정, 어두운 배경→흰색
+            px[i]=px[i+1]=px[i+2]=v;
+          }
+          ctx.putImageData(id,0,0);
+        }catch(ex){}
+      }
       p.then(function(w){return w.recognize(cv.toDataURL("image/png"))}).then(function(res){
         done(((res.data&&res.data.text)||"").match(/\d{2,3}/g)||[]);
       }).catch(function(){done([]);});
     }
-    // 1) 게이지 중앙만 크롭 → 큰 숫자만 인식 (눈금/최소·평균·최대 행 제외)
-    recog(Math.round(W*0.27),Math.round(H*0.15),Math.round(W*0.46),Math.round(H*0.42),2.4,function(c){
+    // 1) 게이지 중앙만 크롭 + 이진화 → 흰 숫자만 또렷하게
+    recog(Math.round(W*0.27),Math.round(H*0.15),Math.round(W*0.46),Math.round(H*0.40),3,true,function(c){
       var nums=c.map(parseFloat).filter(function(n){return n>=20&&n<=99&&!SCALE[n]});
       if(nums.length){cb(Math.round(nums[0]));return;}
-      // 2) 실패 시 전체 이미지에서 (눈금/소수 제외) 중앙값
-      recog(0,0,W,H,1.6,function(a){
-        var all=a.map(parseFloat).filter(function(n){return n>=20&&n<=99&&!SCALE[n]});
-        if(!all.length){cb(null);return}
-        all.sort(function(x,y){return x-y});
-        cb(Math.round(all[Math.floor((all.length-1)/2)]));
+      // 2) 이진화 없이 중앙 크롭 재시도
+      recog(Math.round(W*0.27),Math.round(H*0.15),Math.round(W*0.46),Math.round(H*0.40),2.4,false,function(c2){
+        var n2=c2.map(parseFloat).filter(function(n){return n>=20&&n<=99&&!SCALE[n]});
+        if(n2.length){cb(Math.round(n2[0]));return;}
+        // 3) 전체 이미지에서 (눈금/소수 제외) 중앙값
+        recog(0,0,W,H,1.6,false,function(a){
+          var all=a.map(parseFloat).filter(function(n){return n>=20&&n<=99&&!SCALE[n]});
+          if(!all.length){cb(null);return}
+          all.sort(function(x,y){return x-y});
+          cb(Math.round(all[Math.floor((all.length-1)/2)]));
+        });
       });
     });
   };
