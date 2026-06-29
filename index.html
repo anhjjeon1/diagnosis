@@ -87,11 +87,12 @@ header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.72);backdro
 .photo-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:6px}
 .photo-cell .mini-lab{margin:0 0 5px}
 .photo-slot.ratio34{aspect-ratio:1/1}
-.photo-slot.ratio34 .photo-btn{height:100%;flex-direction:column;gap:3px;font-size:12px;line-height:1.35}
+.photo-slot.ratio916{aspect-ratio:9/16}
+.photo-slot.ratio34 .photo-btn,.photo-slot.ratio916 .photo-btn{height:100%;flex-direction:column;gap:3px;font-size:12px;line-height:1.35}
 .cam{font-size:12px;line-height:1}
 .ph-lab{font-size:12px;font-weight:700;color:#A9B4AD;text-align:center;line-height:1.3;margin-top:4px}
-.photo-slot.ratio34 .photo-thumb{height:100%}
-.photo-slot.ratio34 .photo-thumb img{height:100%;max-height:none}
+.photo-slot.ratio34 .photo-thumb,.photo-slot.ratio916 .photo-thumb{height:100%}
+.photo-slot.ratio34 .photo-thumb img,.photo-slot.ratio916 .photo-thumb img{height:100%;max-height:none}
 .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .db{width:100%;padding:3px 4px;text-align:center;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;border:1.5px solid var(--line);border-radius:var(--r-sm);background:var(--surface);transition:border-color .15s,box-shadow .15s}
 .db::placeholder{color:#C4CCC7;font-weight:500}
@@ -169,7 +170,7 @@ footer .ph{color:var(--brand-700);font-weight:800}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 기밀성능 측정앱</h1><span class="ver">V 2.2</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 기밀성능 측정앱</h1><span class="ver">V 2.3</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -326,7 +327,7 @@ function render(){
       +'<div class="loc-pad"><div class="seg-label" style="color:var(--ink-2);margin-top:0"><span class="dot before"></span>점검창호</div>'
       +'<div class="photo-row"><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(loc.placeLPhoto,"점검창호","placeL",loc.id)+'</div></div><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(loc.placeRPhoto,"점검창호","placeR",loc.id)+'</div></div></div>'
       +'<div class="seg-label before"><span class="stepno">3</span>소음 측정 · 평균소음도 LAeq 기준</div>'
-      +'<div class="photo-row"><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(loc.beforePhoto,"수리 전","before",loc.id,"수리전 소음측정")+'</div></div><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(loc.afterPhoto,"수리 후","after",loc.id,"수리후 소음측정")+'</div></div></div>'
+      +'<div class="photo-row"><div class="photo-cell"><div class="photo-slot ratio916">'+photoHtml(loc.beforePhoto,"수리 전","before",loc.id,"수리전 소음측정")+'</div></div><div class="photo-cell"><div class="photo-slot ratio916">'+photoHtml(loc.afterPhoto,"수리 후","after",loc.id,"수리후 소음측정")+'</div></div></div>'
       +'<div class="onoff" style="margin-top:5px"><div class="dbcell"><span class="mini-lab">수리전 (LAeq)</span><input class="db" inputmode="decimal" placeholder="dB" value="'+escapeHtml(loc.before[0])+'" data-id="'+loc.id+'" data-f="before" data-k="0"></div><div class="dbcell"><span class="mini-lab">수리후 (LAeq)</span><input class="db" inputmode="decimal" placeholder="dB" value="'+escapeHtml(loc.after[0])+'" data-id="'+loc.id+'" data-f="after" data-k="0"></div></div>'
       +'<div class="loc-res empty" id="res_'+loc.id+'"></div>'
       +'<div class="seg-label after"><span class="stepno">4</span>초음파 카메라 측정</div>'
