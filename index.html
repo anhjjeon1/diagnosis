@@ -181,6 +181,8 @@ footer .ph{color:var(--brand-700);font-weight:800}
 .fl span{position:absolute;left:9px;top:4px;font-size:10px;font-weight:750;color:var(--ink-3);pointer-events:none;letter-spacing:0}
 .envgrid .inp{height:42px;padding:15px 6px 2px;font-size:15px;font-weight:700;text-align:center}
 .envgrid .inp::placeholder{font-size:12px;font-weight:600}
+.sizebox{margin-left:auto;display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;color:var(--ink-3);letter-spacing:0}
+.sizebox .db{width:54px;padding:3px 2px;font-size:13px}
 .req-inp{display:block;height:auto;min-height:74px;padding:18px 10px 7px;font-size:13.5px;line-height:1.5;resize:vertical;font-family:inherit}
 .req-inp::placeholder{font-size:12px;color:#A9B4AD}
 .wx-src{font-size:10.5px;color:var(--ink-3);margin-top:5px;text-align:center}
@@ -249,7 +251,7 @@ table.r-res td.l{text-align:left}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 외풍 점검</h1><span class="ver" id="verBadge">V 1.7</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 외풍 점검</h1><span class="ver" id="verBadge">V 1.8</span></div>
   <nav class="modetabs"><a href="noise.html">차음 수리 전·후</a><a href="./" class="on">외풍 점검</a></nav>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
@@ -350,7 +352,11 @@ function uid(){return String(Date.now())+Math.random().toString(36).slice(2,6)}
 function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function toast(m){var t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove("show")},2200)}
 function today(){var d=new Date(),z=function(n){return String(n).padStart(2,"0")};return d.getFullYear()+"-"+z(d.getMonth()+1)+"-"+z(d.getDate())}
-function newWin(){return{id:uid(),name:"",type:"미서기 이중창",front:null,close:null,note:"",ins:"",surf:"",sill:"",fp:"",ph:{},chk:{},fix:[]}}
+// 창틀 크기 → 면적·틈 길이(창틀 둘레 + 미서기·분합은 여밈대 길이=세로)
+function sz(w){var a=num(w.fw),b=num(w.fh);if(!a||!b||a<=0||b<=0)return null;var per=r1(2*(a+b)/1000),meet=/미서기|분합/.test(w.type)?r1(b/1000):0,crack=r1(per+meet);
+  var area=Math.round(a*b/1e4)/100,f=function(n){return Math.round(n).toLocaleString("ko-KR")};
+  return{crack:crack,area:area,txt:f(a)+"×"+f(b)+"mm(면적 "+area+"㎡, 틈 길이 약 "+crack+"m = 창틀 둘레 "+per+"m"+(meet?" + 여밈대 "+meet+"m":"")+")"}}
+function newWin(){return{id:uid(),name:"",type:"미서기 이중창",front:null,close:null,note:"",ins:"",surf:"",sill:"",fp:"",fw:"",fh:"",ph:{},chk:{},fix:[]}}
 function getWin(id){return S.wins.filter(function(w){return w.id===id})[0]}
 function getChk(w,k){if(!w.chk[k])w.chk[k]={on:false,memo:"",photo:null};return w.chk[k]}
 function isDouble(w){return /이중창/.test(w.type)}
@@ -378,7 +384,7 @@ function renderWins(){
       +'<select class="typesel" data-wf="type" data-w="'+w.id+'">'+WTYPES.map(function(t){return '<option'+(t===w.type?' selected':'')+'>'+t+'</option>'}).join("")+'</select>'
       +(S.wins.length>1?'<button class="del-btn" data-act="delwin" data-w="'+w.id+'" aria-label="창호 삭제">✕</button>':'')
       +'</div><div class="loc-pad">'
-      +'<div class="seg-label before" style="margin-top:0"><span class="stepno">2</span>창호 사진</div>'
+      +'<div class="seg-label before" style="margin-top:0"><span class="stepno">2</span>창호 사진<span class="sizebox">가로<input class="db" inputmode="numeric" placeholder="mm" value="'+esc(w.fw)+'" data-wf="fw" data-w="'+w.id+'">×세로<input class="db" inputmode="numeric" placeholder="mm" value="'+esc(w.fh)+'" data-wf="fh" data-w="'+w.id+'">mm</span></div>'
       +'<div class="photo-row"><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(w.front,"전면","front",w.id,"전면 촬영")+'</div></div><div class="photo-cell"><div class="photo-slot ratio34">'+photoHtml(w.close,"근접","close",w.id,"근접 촬영")+'</div></div></div>'
       +DEVS.map(function(d){return '<div class="devrow"><b>'+d.n+'</b><div class="photo-slot">'+photoHtml(w.ph[d.k+"F"],"전면",d.k+"F",w.id,"전면")+'</div><div class="photo-slot">'+photoHtml(w.ph[d.k+"C"],"근접",d.k+"C",w.id,"근접")+'</div></div>'}).join("")
       +'<textarea class="prenote" rows="2" placeholder="고객이 말한 증상 (예: 겨울에 창가 쪽이 서늘하고 커튼이 흔들림)" data-wf="note" data-w="'+w.id+'">'+esc(w.note)+'</textarea>'
@@ -429,6 +435,7 @@ function report(){
     if(w.note)s+=" (증상: "+w.note+")";
     var inst=[];if(w.surf)inst.push("창호 설치면 마감 "+w.surf);if(w.fp==="있음")inst.push("풍지판 있음");if(num(w.sill)!==null)inst.push("창틀 하부 높이 바닥에서 "+w.sill+"cm");
     if(inst.length)s+=" 설치 상태는 "+inst.join(", ")+"입니다.";
+    var z=sz(w);if(z)s+=" 창틀 크기는 "+z.txt+"입니다.";
     L.push(s);
     on.forEach(function(c){agg[c.n]=(agg[c.n]||0)+1;if(c.k==="ins")insGap=true;var m=w.chk[c.k].memo;if(m)L.push("  · "+c.n+": "+m)});
     if(w.fp==="없음")agg["풍지판 없음"]=(agg["풍지판 없음"]||0)+1;
@@ -436,6 +443,13 @@ function report(){
   if(!total)return null;
   if(req)L.push("의뢰하신 불편과 관련해 현장에서 확인된 원인은 위와 같습니다.");
   if(insGap)L.push("창틀 둘레 단열 시공이 부족하거나 없으면 틈이 없어도 창 주변 벽이 차가워져 냉기가 느껴질 수 있어, 틈으로 들어오는 외풍과 구분해서 판단했습니다.");
+  var sized=S.wins.map(function(w,i){return{n:winName(w,i),z:sz(w)}}).filter(function(x){return x.z});
+  if(sized.length){
+    var szL="틈으로 들어오는 바람의 양은 틈 길이에 비례해 늘어나므로, 큰 창일수록 같은 원인이라도 외풍을 더 크게 느낄 수 있습니다.";
+    if(sized.length>=2){sized.sort(function(a,b){return b.z.crack-a.z.crack});var big=sized[0],small=sized[sized.length-1],ratio=big.z.crack/small.z.crack;
+      if(ratio>=1.2)szL+=" 이번 현장에서 가장 큰 '"+big.n+"'(틈 길이 약 "+big.z.crack+"m)은 가장 작은 '"+small.n+"'(약 "+small.z.crack+"m)보다 틈 길이가 약 "+(Math.round(ratio*10)/10)+"배 깁니다.";}
+    L.push(szL);
+  }
   var aggK=Object.keys(agg).filter(function(k){return agg[k]>=2}).sort(function(a,b){return agg[b]-agg[a]});
   if(aggK.length)L.push("여러 창에서 공통으로 확인된 원인은 "+aggK.map(function(k){return k+"("+agg[k]+"곳)"}).join(", ")+"입니다.");
   var fixL=[];S.wins.forEach(function(w,i){var f=FIX.filter(function(x,fi){return w.fix[fi]}).map(function(x){return x.n});if(f.length)fixL.push("'"+winName(w,i)+"': "+f.join(", "))});
@@ -449,10 +463,10 @@ function renderAI(){
 }
 
 // ── 저장 (사진 제외)
-function save(){try{localStorage.setItem(CFG.STORAGE_KEY,JSON.stringify({site:$("#c_site").value,date:$("#c_date").value,req:$("#c_req").value,env:S.env,wins:S.wins.map(function(w){var c={};Object.keys(w.chk).forEach(function(k){c[k]={on:!!w.chk[k].on,memo:w.chk[k].memo||""}});return{id:w.id,name:w.name,type:w.type,note:w.note,surf:w.surf,fp:w.fp,sill:w.sill,chk:c,fix:w.fix}})}))}catch(e){}}
+function save(){try{localStorage.setItem(CFG.STORAGE_KEY,JSON.stringify({site:$("#c_site").value,date:$("#c_date").value,req:$("#c_req").value,env:S.env,wins:S.wins.map(function(w){var c={};Object.keys(w.chk).forEach(function(k){c[k]={on:!!w.chk[k].on,memo:w.chk[k].memo||""}});return{id:w.id,name:w.name,type:w.type,note:w.note,surf:w.surf,fp:w.fp,sill:w.sill,fw:w.fw,fh:w.fh,chk:c,fix:w.fix}})}))}catch(e){}}
 function load(){try{var d=JSON.parse(localStorage.getItem(CFG.STORAGE_KEY)||"null");if(!d)return false;$("#c_site").value=d.site||"";$("#c_date").value=d.date||"";$("#c_req").value=d.req||"";
   if(d.env)Object.keys(S.env).forEach(function(k){if(d.env[k]!==undefined)S.env[k]=d.env[k]});
-  S.wins=(d.wins||[]).map(function(w){var n=newWin();n.id=w.id||n.id;n.name=w.name||"";n.type=w.type||n.type;n.note=w.note||"";n.surf=w.surf||"";n.fp=w.fp||"";n.sill=w.sill||"";n.fix=Array.isArray(w.fix)?w.fix:[];
+  S.wins=(d.wins||[]).map(function(w){var n=newWin();n.id=w.id||n.id;n.name=w.name||"";n.type=w.type||n.type;n.note=w.note||"";n.surf=w.surf||"";n.fp=w.fp||"";n.sill=w.sill||"";n.fw=w.fw||"";n.fh=w.fh||"";n.fix=Array.isArray(w.fix)?w.fix:[];
     Object.keys(w.chk||{}).forEach(function(k){var y=getChk(n,k);y.on=!!w.chk[k].on;y.memo=w.chk[k].memo||""});return n});
   return S.wins.length>0}catch(e){return false}}
 function syncEnvInputs(){document.querySelectorAll("[data-env]").forEach(function(el){var k=el.dataset.env;if(el.type==="checkbox")el.checked=!!S.env[k];else el.value=S.env[k]||""});$("#wxSrc").textContent=S.env.src||"";updateDew()}
@@ -492,7 +506,7 @@ function buildPrint(){
   $("#print-area").innerHTML=
     '<div class="pblock"><div class="r-head"><div class="r-title">창호 외풍 점검 소견서</div><div class="r-org">'+esc(CFG.COMPANY)+'</div></div></div>'
    +'<div class="pblock"><table class="r-info"><tr><th>현장 / 고객명</th><td>'+site+'</td><th>점검일자</th><td>'+date+'</td></tr>'+(($("#c_req").value||"").trim()?'<tr><th>의뢰자 의견</th><td colspan="3">'+esc($("#c_req").value.trim()).replace(/\n/g,"<br>")+'</td></tr>':'')+'<tr><th>점검 조건</th><td colspan="3">'+(cond.join(" · ")||"-")+'</td></tr><tr><th>점검 방법</th><td colspan="3">창짝·창틀 제작 치수, 창틀 변형, 모헤어 밀착, 풍지판, 물구멍 타공, 제품 단열, 창틀 주위 단열 시공을 항목별로 확인하고 열화상·초음파 등 장비 사진으로 기록</td></tr><tr><th>종합 판정</th><td colspan="3"><b style="color:'+(r?r.color:"#333")+'">'+(r?r.grade:"-")+'</b></td></tr></table></div>'
-   +(S.wins.some(function(w){return w.surf||w.fp||num(w.sill)!==null})?'<div class="pblock"><div class="r-sec">창호 설치 상태</div><table class="r-res"><thead><tr><th style="text-align:left">위치</th><th>창 종류</th><th>설치면 마감</th><th>풍지판</th><th>창틀 하부 높이</th></tr></thead><tbody>'+S.wins.map(function(w,i){return '<tr><td class="l">'+esc(winName(w,i))+'</td><td>'+esc(w.type)+'</td><td>'+esc(w.surf||"-")+'</td><td>'+esc(w.fp||"-")+'</td><td>'+(num(w.sill)!==null?esc(w.sill)+"cm":"-")+'</td></tr>'}).join("")+'</tbody></table></div>':'')
+   +(S.wins.some(function(w){return w.surf||w.fp||num(w.sill)!==null||sz(w)})?'<div class="pblock"><div class="r-sec">창호 설치 상태</div><table class="r-res"><thead><tr><th style="text-align:left">위치</th><th>창 종류</th><th>창틀 크기(mm)</th><th>틈 길이</th><th>설치면 마감</th><th>풍지판</th><th>창틀 하부 높이</th></tr></thead><tbody>'+S.wins.map(function(w,i){return '<tr><td class="l">'+esc(winName(w,i))+'</td><td>'+esc(w.type)+'</td><td>'+(sz(w)?esc(w.fw+"×"+w.fh):"-")+'</td><td>'+(sz(w)?"약 "+sz(w).crack+"m":"-")+'</td><td>'+esc(w.surf||"-")+'</td><td>'+esc(w.fp||"-")+'</td><td>'+(num(w.sill)!==null?esc(w.sill)+"cm":"-")+'</td></tr>'}).join("")+'</tbody></table></div>':'')
    +'<div class="pblock"><div class="r-sec">1. 외풍 원인 확인</div><table class="r-res"><thead><tr><th style="text-align:left">위치</th><th style="text-align:left">확인된 원인</th><th style="text-align:left">메모</th></tr></thead><tbody>'+(rows||'<tr><td colspan="3">확인된 원인 없음</td></tr>')+'</tbody></table></div>'
    +(r?'<div class="pblock"><div class="r-sec">2. 종합 소견</div><ul class="r-ai">'+r.lines.map(function(s){return '<li>'+esc(s.replace(/^\s+·\s/,"└ "))+'</li>'}).join("")+'</ul></div>':'')
    +(photos?'<div class="pblock"><div class="r-sec">3. 점검 사진</div></div>'+photos:'')
