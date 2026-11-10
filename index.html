@@ -202,6 +202,12 @@ footer .ph{color:var(--brand-700);font-weight:800}
 .agesel.empty{color:var(--ink-3);border-color:#E9A3A3}
 .loc-head .typesel{font-size:12px;padding:5px 2px 5px 5px}
 .loc-head{gap:5px;padding:8px 8px}
+/* 창호 줄: 번호 | 위치 | 종류 | 구분 | 준공 | 삭제 — 폭을 고르게 */
+.loc-head{display:grid;grid-template-columns:18px minmax(0,1.15fr) minmax(0,1fr) minmax(0,.95fr) minmax(0,1fr) auto;align-items:center}
+.loc-head .typesel{width:100%;flex:none;min-width:0;padding:5px 13px 5px 6px;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%236B7A72' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 4px center;text-overflow:clip}
+.loc-head .yearsel:disabled{background-color:var(--surface-2)}
+.loc-head .etc-inp{grid-row:2;grid-column:2 / -1;width:100%}
+.yearsel:disabled{background:var(--surface-2);color:#B8C2BC;border-color:var(--line)}
 .etc-inp{flex:.8 1 0;min-width:0;font-size:13px;font-weight:700;padding:5px 7px;border:1.5px solid var(--line);border-radius:9px;background:#fff;font-family:inherit}
 .part{border:1px solid var(--line);border-radius:12px;padding:6px 9px;margin-top:5px;background:#fff}
 .part.lv2{border-color:#EBC77A;background:#FFFBF1}
@@ -272,7 +278,7 @@ table.r-res td.l{text-align:left}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 2.6</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 2.7</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -342,6 +348,7 @@ var CHK=[
  {k:"prod",n:"단열 취약 제품",d:"제품 자체 단열 성능이 낮음"},
  {k:"ins",n:"창틀 주위 단열 시공 부족·없음",d:"창 둘레 벽이 차가워짐"}];
 var WTYPES=["미서기 이중창","미서기 단창","분합창","여닫이·틸트","고정창","기타"];
+var WTYPE_SHORT=["이중창","단창","분합창","여닫이","고정창","기타"];
 var AGES=["신축","구축(원데이 시공)"],AGE_SHORT=["신축","구축(원데이)"];if(window.innerWidth<560)AGE_SHORT=["신축","구축"];
 var YEARS=[];for(var _y=1990;_y<=2023;_y++)YEARS.push(_y);
 // 공동주택 외기에 직접 면하는 창 열관류율 법정 기준 (시행일, 법제처 연혁 확인 2026-11-10)
@@ -420,9 +427,9 @@ function renderWins(){
     return '<div class="loc"><div class="loc-head"><span class="loc-no">'+(i+1)+'</span>'
       +'<select class="typesel locsel'+(w.name?'':' empty')+'" data-wf="name" data-w="'+w.id+'"><option value=""'+(w.name?'':' selected')+' disabled>위치 선택</option>'+ROOMS.map(function(t){return '<option'+(t===w.name?' selected':'')+'>'+t+'</option>'}).join("")+'</select>'
       +(w.name==="기타"?'<input class="etc-inp" value="'+esc(w.nameEtc||"")+'" placeholder="위치 직접 입력" data-wf="nameEtc" data-w="'+w.id+'">':'')
-      +'<select class="typesel kindsel" data-wf="type" data-w="'+w.id+'">'+WTYPES.map(function(t){return '<option'+(t===w.type?' selected':'')+'>'+t+'</option>'}).join("")+'</select>'
+      +'<select class="typesel kindsel" data-wf="type" data-w="'+w.id+'">'+WTYPES.map(function(t,ti){return '<option value="'+t+'"'+(t===w.type?' selected':'')+'>'+WTYPE_SHORT[ti]+'</option>'}).join("")+'</select>'
       +'<select class="typesel agesel'+(w.age?'':' empty')+'" data-wf="age" data-w="'+w.id+'"><option value=""'+(w.age?'':' selected')+' disabled>구분</option>'+AGES.map(function(t,ai){return '<option value="'+t+'"'+(t===w.age?' selected':'')+'>'+AGE_SHORT[ai]+'</option>'}).join("")+'</select>'
-      +(w.age===AGES[1]?'<select class="typesel yearsel'+(w.year?'':' empty')+'" data-wf="year" data-w="'+w.id+'"><option value=""'+(w.year?'':' selected')+' disabled>준공</option>'+YEARS.map(function(y){return '<option value="'+y+'"'+(String(y)===String(w.year)?' selected':'')+'>'+y+'</option>'}).join("")+'</select>':'')
+      +'<select class="typesel yearsel'+(w.age===AGES[1]&&!w.year?' empty':'')+'" data-wf="year" data-w="'+w.id+'"'+(w.age===AGES[1]?'':' disabled')+'><option value=""'+(w.year?'':' selected')+' disabled>준공</option>'+YEARS.map(function(y){return '<option value="'+y+'"'+(String(y)===String(w.year)?' selected':'')+'>'+y+'</option>'}).join("")+'</select>'
       +(S.wins.length>1?'<button class="del-btn" data-act="delwin" data-w="'+w.id+'" aria-label="창호 삭제">✕</button>':'')
       +'</div><div class="loc-pad">'
       +'<div class="seg-label before" style="margin-top:0"><span class="stepno">2</span>창호 사진<span class="sizebox">가로<input class="db" inputmode="numeric" placeholder="mm" value="'+esc(w.fw)+'" data-wf="fw" data-w="'+w.id+'">×세로<input class="db" inputmode="numeric" placeholder="mm" value="'+esc(w.fh)+'" data-wf="fh" data-w="'+w.id+'">mm</span></div>'
