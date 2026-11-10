@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0F3D26">
 <title>창호외풍 점검앱 · 청개구리샤시</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root{--brand:#2E7D32;--brand-700:#1B5E20;--brand-900:#0E3A23;--brand-300:#5FC07A;--brand-50:#ECF6EE;--accent:#10B981;--ink:#0C1611;--ink-2:#3D4D45;--ink-3:#7C8B82;--line:#E9EEEA;--line-2:#F2F6F3;--surface:#FFFFFF;--surface-2:#F7FAF8;--bg:#EDF2EE;--warn:#B8860B;--bad:#DC2626;--neutral:#8B978F;--r-sm:12px;--r-md:16px;--r-lg:22px;--r-xl:28px;--sh-sm:0 1px 2px rgba(13,38,24,.04),0 2px 6px rgba(13,38,24,.05);--sh-md:0 4px 16px rgba(13,38,24,.07),0 1px 3px rgba(13,38,24,.05);--sh-lg:0 18px 44px rgba(13,38,24,.16),0 4px 12px rgba(13,38,24,.07);--ring:0 0 0 3.5px rgba(46,125,50,.15);--safe-b:env(safe-area-inset-bottom,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -207,6 +208,49 @@ footer .ph{color:var(--brand-700);font-weight:800}
 .instcell span{display:block;font-size:11px;font-weight:750;color:var(--ink-3);margin:0 0 3px 2px;white-space:nowrap}
 .inst-sel{width:100%;min-width:0;font-size:12.5px;padding:6px 13px 6px 7px;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%236B7A72' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 5px center}
 .inst-sel.empty{color:var(--ink-3)}
+#print-area.rp{font-family:"Noto Serif KR","Nanum Myeongjo","Batang",serif;color:#1d2a33;letter-spacing:-.2px}
+.rp .pblock{padding:0 2px}
+.rp .cover{height:1030px;position:relative}
+.rp .cv-logo{display:flex;align-items:center;gap:10px;padding:26px 0 0 6px;font-size:17px;font-weight:700;color:#1E5E3C}
+.rp .cv-logo img{width:46px;height:46px}
+.rp .cv-mid{position:absolute;left:0;right:0;top:250px;text-align:center}
+.rp .cv-en{font-size:11.5px;letter-spacing:4px;color:#8A9399}
+.rp .cv-title{font-size:38px;font-weight:900;color:#141C22;margin-top:14px;letter-spacing:-1px}
+.rp .cv-bar{width:84px;height:5px;background:#0F6B52;margin:18px auto 0;border-radius:2px}
+.rp .cv-sub{font-size:13.5px;font-weight:700;color:#0F6B52;margin-top:16px}
+.rp .cv-info{position:absolute;left:0;right:0;top:520px}
+.rp .cv-foot{position:absolute;left:0;right:0;top:830px;border-top:1px solid #dfe5e2;padding-top:12px;text-align:center;font-size:11px;color:#8A9399}
+.rp table.ti{width:100%;border-collapse:collapse;font-size:12px}
+.rp table.ti th{width:150px;background:#E7ECEA;border:1px solid #d5ddd9;padding:9px 12px;text-align:left;font-weight:600;color:#33424c}
+.rp table.ti td{border:1px solid #d5ddd9;padding:9px 12px;line-height:1.55}
+.rp .sh{font-size:16px;font-weight:900;color:#0F4F3E;padding:14px 0 7px;border-bottom:2.5px solid #0F6B52;margin-bottom:10px}
+.rp .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.rp .cardx{border-radius:4px;padding:14px 6px 12px;text-align:center}
+.rp .cardx .k{font-size:12px;font-weight:700}
+.rp .cardx .v{font-size:30px;font-weight:900;line-height:1.25;margin-top:4px}
+.rp .cardx .s{font-size:10px;margin-top:2px}
+.rp .c1{background:#FDE4E4;color:#C0392B}.rp .c2{background:#FFF1D6;color:#BF7A0E}.rp .c3{background:#E3F4EC;color:#1E7B4F}.rp .c4{background:#EDF1F4;color:#1F2D3A}
+.rp .opbox{border:1px solid #d5ddd9;padding:13px 16px;font-size:12px;line-height:1.85}
+.rp .opbox p{margin:0 0 3px}.rp .opbox p.sub{padding-left:14px;color:#33424c}
+.rp table.tl{width:100%;border-collapse:collapse;font-size:11.5px}
+.rp table.tl th{background:#E4EDE8;border:1px solid #d5ddd9;padding:8px 8px;font-weight:700;color:#33424c}
+.rp table.tl td{border:1px solid #d5ddd9;padding:9px 8px;text-align:center;line-height:1.5}
+.rp table.tl td.l{text-align:left}
+.rp .red{color:#C0392B;font-weight:700}
+.rp .cbx{font-size:15px;color:#6b7780}
+.rp .icard{border:1px solid #cfdad5;border-top:3px solid #0F6B52;padding:0 10px}
+.rp .icard.mid{border-top:none;border-bottom:none}
+.rp .icard.top{border-bottom:none}.rp .icard.bot{border-top:none;padding-bottom:10px}
+.rp .ihead{display:flex;justify-content:space-between;align-items:baseline;padding:11px 2px 9px;border-bottom:1px solid #e3e9e6}
+.rp .ihead b{font-size:14px;color:#0F4F3E}.rp .ihead i{font-style:normal;font-size:11.5px;color:#0F6B52;margin-left:6px}
+.rp .ihead span{font-size:10.5px;color:#8A9399}
+.rp .iph{display:flex;gap:10px;justify-content:center;padding:10px 0 4px}
+.rp .iph div{width:300px}
+.rp .iph img{width:300px;height:225px;object-fit:contain;background:#f3f5f4;display:block}
+.rp .iph .cap{font-size:10.5px;color:#8A9399;text-align:center;margin-top:4px}
+.rp ul.bl{margin:0;padding-left:4px;list-style:none;font-size:11.5px;line-height:1.9;color:#33424c}
+.rp ul.bl li:before{content:"· "}
+.rp .endnote{font-size:9.5px;color:#9aa3a8;text-align:center;border-top:1px solid #e3e9e6;margin-top:16px;padding-top:9px}
 /* 창호 줄: 번호 | 위치 | 종류 | 구분 | 준공 | 삭제 — 폭을 고르게 */
 .loc-head{display:grid;grid-template-columns:18px minmax(0,1.15fr) minmax(0,1fr) minmax(0,.95fr) minmax(0,1fr) auto;align-items:center}
 .loc-head .typesel{width:100%;flex:none;min-width:0;padding:5px 13px 5px 6px;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%236B7A72' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 4px center;text-overflow:clip}
@@ -294,7 +338,7 @@ table.r-res td.l{text-align:left}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 3.3</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 3.4</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -350,7 +394,7 @@ table.r-res td.l{text-align:left}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-var CFG={STORAGE_KEY:"frogsash_draft_v1",
+var CFG={STORAGE_KEY:"frogsash_draft_v1",INSPECTOR:"전영웅 (창호 분야)",
 COMPANY:"청개구리샤시 · 010-2322-0949 · frogsash.co.kr",
 NOTICE:"본 점검은 외풍이 들어오는 자리를 현장에서 찾기 위한 정성 점검이며, 법적 기밀성 등급(KS F 2292 통기량)과는 다른 지표입니다. 외풍 세기는 그날의 바람과 실내외 온도차에 따라 달라집니다."};
 // 원데이 시공 등 외풍 원인 체크 항목
@@ -580,29 +624,79 @@ function autoWeather(){if(!S.env.tOut&&!S.env.wind&&($("#c_date").value||today()
 
 // ── PDF
 function buildPrint(){
-  var site=esc($("#c_site").value||"-"),date=esc($("#c_date").value||"-"),e=S.env,r=report();
-  var cond=[];if(e.tOut)cond.push("실외 "+esc(e.tOut)+"℃");if(e.tIn)cond.push("실내 "+esc(e.tIn)+"℃");if(e.rh)cond.push("습도 "+esc(e.rh)+"%");var dp=dewPoint();if(dp!==null)cond.push("이슬점 "+dp+"℃");if(e.wind)cond.push("바람 "+esc(e.wind)+"m/s"+(e.wdir?" "+esc(e.wdir)+"풍":""));
-  var rows="";S.wins.forEach(function(w,i){CHK.forEach(function(c){var x=w.chk[c.k];if(!x||!x.on)return;
-    rows+='<tr><td class="l">'+esc(winName(w,i))+'</td><td class="l" style="color:#B42318;font-weight:700">'+esc(c.n)+'</td><td class="l">'+esc(x.memo||"-")+'</td></tr>'});
-    if(w.fp==="없음")rows+='<tr><td class="l">'+esc(winName(w,i))+'</td><td class="l" style="color:#B42318;font-weight:700">풍지판 없음</td><td class="l">-</td></tr>'});
-  var photos="";
-  S.wins.forEach(function(w,i){var items=[];if(w.front)items.push([w.front,"일반 촬영 · 전면"]);if(w.close)items.push([w.close,"일반 촬영 · 근접"]);
-    DEVS.forEach(function(d){if(w.ph[d.k+"F"])items.push([w.ph[d.k+"F"],d.n+" · 전면"]);if(w.ph[d.k+"C"])items.push([w.ph[d.k+"C"],d.n+" · 근접"])});
-    CHK.forEach(function(c){var x=w.chk[c.k];if(x&&x.photo)items.push([x.photo,c.n+(x.on?"":" (참고)")])});
-    if(!items.length)return;
-    photos+='<div class="pblock"><div class="r-ploc">점검 위치 · '+esc(winName(w,i))+' ('+esc(w.type)+')</div></div>';
-    for(var j=0;j<items.length;j+=2){photos+='<div class="pblock"><div class="r-photos">'+[items[j],items[j+1]].map(function(it){return it?'<div class="r-photo"><img src="'+it[0]+'"><div class="cap">'+esc(it[1])+'</div></div>':'<div class="r-photo"></div>'}).join("")+'</div></div>'}
+  var siteRaw=$("#c_site").value||"-",site=esc(siteRaw),date=$("#c_date").value||today(),e=S.env,r=report();
+  var now=new Date(),z=function(n){return String(n).padStart(2,"0")};
+  var repNo="DR-"+date.replace(/-/g,"")+"-"+z(now.getHours())+z(now.getMinutes());
+  var causes=[];S.wins.forEach(function(w,i){CHK.forEach(function(c){var x=w.chk[c.k];if(x&&x.on)causes.push({w:w,i:i,k:c.k,n:cLabel(w,c),memo:c.free?"":(x.memo||""),photo:x.photo})});if(w.fp==="없음")causes.push({w:w,i:i,k:"nofp",n:"풍지판 없음",memo:"",photo:null})});
+  var photoCnt=0;S.wins.forEach(function(w){if(w.front)photoCnt++;if(w.close)photoCnt++;Object.keys(w.ph||{}).forEach(function(k){if(w.ph[k])photoCnt++});Object.keys(w.chk).forEach(function(k){if(w.chk[k].photo)photoCnt++})});
+  var tO=num(e.tOut),tI=num(e.tIn),dT=(tO!==null&&tI!==null)?r1(tI-tO):null,dp=dewPoint();
+  function sh(t){return '<div class="sh">'+t+'</div>'}
+  function kind(w){return esc(w.type)+(w.age?' → '+esc(w.age)+(w.age===AGES[1]&&w.year?' · '+w.year+'년 준공':''):'')}
+  var H="";
+  // 표지
+  H+='<div class="pblock cover"><div class="cv-logo"><img src="logo.jpg" alt="">청개구리샤시</div>'
+   +'<div class="cv-mid"><div class="cv-en">WINDOW DRAFT INSPECTION REPORT</div><div class="cv-title">창호 외풍 점검 보고서</div><div class="cv-bar"></div><div class="cv-sub">창호 전문가의 외풍 원인 현장 정밀 점검</div></div>'
+   +'<div class="cv-info"><table class="ti"><tr><th>현장</th><td><b>'+site+'</b></td></tr><tr><th>점검일</th><td>'+date.replace(/-/g,".")+'</td></tr><tr><th>점검자</th><td>'+esc(CFG.INSPECTOR)+'</td></tr><tr><th>점검 창호</th><td>총 '+S.wins.length+'곳</td></tr><tr><th>기록 항목</th><td>총 '+causes.length+'건</td></tr><tr><th>보고서 번호</th><td>'+repNo+'</td></tr></table></div>'
+   +'<div class="cv-foot">청개구리샤시 · 전화 010-2322-0949 · frogsash.co.kr</div></div>';
+  // 1. 요약
+  H+='<div class="pblock newpage">'+sh("1. 점검 결과 요약")+'<div class="cards">'
+   +'<div class="cardx c1"><div class="k">외풍 원인</div><div class="v">'+causes.length+'</div><div class="s">확인 항목</div></div>'
+   +'<div class="cardx c2"><div class="k">점검 창호</div><div class="v">'+S.wins.length+'</div><div class="s">점검 위치</div></div>'
+   +'<div class="cardx c3"><div class="k">기록 사진</div><div class="v">'+photoCnt+'</div><div class="s">일반·열화상·초음파 등</div></div>'
+   +'<div class="cardx c4"><div class="k">실내외 온도차</div><div class="v">'+(dT!==null?dT+'<span style="font-size:16px">℃</span>':'-')+'</div><div class="s">점검 당시</div></div></div></div>';
+  // 2. 진단 의견
+  if(r)H+='<div class="pblock">'+sh("2. 진단 의견")+'<div class="opbox">'+r.lines.map(function(t){var sub=/^\s+·\s/.test(t);return '<p'+(sub?' class="sub"':'')+'>'+esc(t.replace(/^\s+·\s/,"└ "))+'</p>'}).join("")+'</div></div>';
+  // 3. 점검 조건
+  var req=($("#c_req").value||"").trim();
+  var wx=[];if(tO!==null)wx.push("실외 "+tO+"℃");if(e.wind)wx.push("바람 "+esc(e.wind)+"m/s"+(e.wdir?" ("+esc(e.wdir)+"풍)":""));
+  var inn=[];if(tI!==null)inn.push("실내 "+tI+"℃");if(e.rh)inn.push("습도 "+esc(e.rh)+"%");if(dp!==null)inn.push("이슬점 "+dp+"℃");
+  H+='<div class="pblock">'+sh("3. 점검 조건")+'<table class="ti">'+(req?'<tr><th>의뢰자 의견</th><td>'+esc(req).replace(/\n/g,"<br>")+'</td></tr>':'')
+   +'<tr><th>실외 기상</th><td>'+(wx.join(" · ")||"-")+(S.env.src&&/Open-Meteo/.test(S.env.src)?' <span style="color:#8A9399;font-size:10.5px">(Open-Meteo 기상 자료)</span>':'')+'</td></tr>'
+   +'<tr><th>실내 환경</th><td>'+(inn.join(" · ")||"-")+'</td></tr></table></div>';
+  // 4. 창호별 현황
+  H+='<div class="pblock">'+sh("4. 창호별 현황")+'<table class="tl"><thead><tr><th>번호</th><th>위치</th><th>창 종류 · 구분</th><th>창틀 크기</th><th>틈 길이</th><th>설치면</th><th>풍지판</th><th>바닥 높이</th><th>원인</th></tr></thead><tbody>'
+   +S.wins.map(function(w,i){var n=causes.filter(function(x){return x.w===w}).length;return '<tr><td>'+(i+1)+'</td><td>'+esc(winName(w,i))+'</td><td class="l">'+kind(w)+'</td><td>'+(sz(w)?esc(w.fw+"×"+w.fh):"-")+'</td><td>'+(sz(w)?"약 "+sz(w).crack+"m":"-")+'</td><td>'+esc(w.surf||"-")+'</td><td>'+esc(w.fp||"-")+'</td><td>'+(num(w.sill)!==null?esc(w.sill)+"cm":"-")+'</td><td'+(n?' class="red"':'')+'>'+n+'건</td></tr>'}).join("")+'</tbody></table></div>';
+  // 5. 확인된 외풍 원인
+  H+='<div class="pblock">'+sh("5. 확인된 외풍 원인")+'<table class="tl"><thead><tr><th style="width:40px">번호</th><th style="width:90px">위치</th><th>원인</th><th>권장 수리</th></tr></thead><tbody>'
+   +(causes.length?causes.map(function(x,j){return '<tr><td>'+(j+1)+'</td><td>'+esc(winName(x.w,x.i))+'</td><td class="l red">'+esc(x.n)+(x.memo?'<br><span style="color:#5b6870;font-weight:400;font-size:10.5px">'+esc(x.memo)+'</span>':'')+'</td><td class="l">'+esc(CAUSE_FIX[x.k]||"-")+'</td></tr>'}).join(""):'<tr><td colspan="4">확인된 원인 없음</td></tr>')+'</tbody></table></div>';
+  // 6. 창호별 상세 (사진 + 표)
+  S.wins.forEach(function(w,i){
+    var ph=[];if(w.front)ph.push([w.front,"일반 · 전면"]);if(w.close)ph.push([w.close,"일반 · 근접"]);
+    DEVS.forEach(function(d){if(w.ph[d.k+"F"])ph.push([w.ph[d.k+"F"],d.n+" · 전면"]);if(w.ph[d.k+"C"])ph.push([w.ph[d.k+"C"],d.n+" · 근접"])});
+    CHK.forEach(function(c){var x=w.chk[c.k];if(x&&x.photo)ph.push([x.photo,cLabel(w,c)+(x.on?"":" (참고)")])});
+    var my=causes.filter(function(x){return x.w===w});
+    H+='<div class="pblock'+(i===0?' newpage':'')+'">'+(i===0?sh("6. 창호별 상세"):'')+'<div class="icard top"><div class="ihead"><div><b>'+(i+1)+'. '+esc(winName(w,i))+'</b><i>'+kind(w)+'</i></div><span>청개구리샤시 · 창호</span></div></div></div>';
+    for(var j=0;j<ph.length;j+=2){H+='<div class="pblock"><div class="icard mid"><div class="iph">'+[ph[j],ph[j+1]].filter(Boolean).map(function(it){return '<div><img src="'+it[0]+'"><div class="cap">'+esc(it[1])+'</div></div>'}).join("")+'</div></div></div>'}
+    var inst=[];if(w.surf)inst.push("설치면 "+w.surf);if(w.fp)inst.push("풍지판 "+w.fp);if(num(w.sill)!==null)inst.push("창틀과 바닥 높이 "+w.sill+"cm");var zz=sz(w);if(zz)inst.push("창틀 "+zz.txt);
+    H+='<div class="pblock"><div class="icard bot"><table class="ti" style="margin-top:8px">'
+      +'<tr><th>확인된 원인</th><td>'+(my.length?my.map(function(x){return '<span class="red">'+esc(x.n)+'</span>'+(x.memo?' — '+esc(x.memo):'')}).join("<br>"):"외풍 원인이 확인되지 않았습니다.")+'</td></tr>'
+      +'<tr><th>권장 수리</th><td>'+(my.length?my.map(function(x){return esc(x.n)+' → '+esc(CAUSE_FIX[x.k]||"-")}).join("<br>"):"-")+'</td></tr>'
+      +'<tr><th>설치 상태</th><td>'+(inst.length?esc(inst.join(" · ")):"-")+'</td></tr></table></div></div>';
   });
-  $("#print-area").innerHTML=
-    '<div class="pblock"><div class="r-head"><div class="r-title">창호 외풍 점검 소견서</div><div class="r-org">'+esc(CFG.COMPANY)+'</div></div></div>'
-   +'<div class="pblock"><table class="r-info"><tr><th>현장 / 고객명</th><td>'+site+'</td><th>점검일자</th><td>'+date+'</td></tr>'+(($("#c_req").value||"").trim()?'<tr><th>의뢰자 의견</th><td colspan="3">'+esc($("#c_req").value.trim()).replace(/\n/g,"<br>")+'</td></tr>':'')+'<tr><th>점검 조건</th><td colspan="3">'+(cond.join(" · ")||"-")+'</td></tr><tr><th>점검 방법</th><td colspan="3">창짝·창틀 제작 치수, 창틀 변형, 모헤어 밀착, 풍지판, 물구멍 타공, 제품 단열, 창틀 주위 단열 시공을 항목별로 확인하고 열화상·초음파 등 장비 사진으로 기록</td></tr><tr><th>종합 판정</th><td colspan="3"><b style="color:'+(r?r.color:"#333")+'">'+(r?r.grade:"-")+'</b></td></tr></table></div>'
-   +(S.wins.some(function(w){return w.surf||w.fp||w.age||num(w.sill)!==null||sz(w)})?'<div class="pblock"><div class="r-sec">창호 설치 상태</div><table class="r-res"><thead><tr><th style="text-align:left">위치</th><th>창 종류</th><th>구분</th><th>창틀 크기(mm)</th><th>틈 길이</th><th>설치면 마감</th><th>풍지판</th><th>창틀과 바닥 높이</th></tr></thead><tbody>'+S.wins.map(function(w,i){return '<tr><td class="l">'+esc(winName(w,i))+'</td><td>'+esc(w.type)+'</td><td>'+esc((w.age||"-")+(w.age===AGES[1]&&w.year?" · "+w.year+"년 준공":""))+'</td><td>'+(sz(w)?esc(w.fw+"×"+w.fh):"-")+'</td><td>'+(sz(w)?"약 "+sz(w).crack+"m":"-")+'</td><td>'+esc(w.surf||"-")+'</td><td>'+esc(w.fp||"-")+'</td><td>'+(num(w.sill)!==null?esc(w.sill)+"cm":"-")+'</td></tr>'}).join("")+'</tbody></table></div>':'')
-   +'<div class="pblock"><div class="r-sec">1. 외풍 원인 확인</div><table class="r-res"><thead><tr><th style="text-align:left">위치</th><th style="text-align:left">확인된 원인</th><th style="text-align:left">메모</th></tr></thead><tbody>'+(rows||'<tr><td colspan="3">확인된 원인 없음</td></tr>')+'</tbody></table></div>'
-   +(r?'<div class="pblock"><div class="r-sec">2. 진단 의견</div><ul class="r-ai">'+r.lines.map(function(s){var sub=/^\s+·\s/.test(s);return '<li'+(sub?' style="list-style:none;margin-left:-2px"':'')+'>'+esc(s.replace(/^\s+·\s/,"└ "))+'</li>'}).join("")+'</ul></div>':'')
-   +(photos?'<div class="pblock"><div class="r-sec">3. 점검 사진</div></div>'+photos:'')
-   +'<div class="pblock"><div class="r-notice">※ '+esc(CFG.NOTICE)+'</div><div class="r-foot">'+esc(CFG.COMPANY)+' &nbsp;|&nbsp; 발행일 '+date+'</div></div>';
+  // 7. 수리 확인표
+  H+='<div class="pblock newpage">'+sh("7. 수리 확인표")+'<div style="font-size:11px;color:#5b6870;margin:-4px 0 8px">수리가 끝난 뒤, 항목마다 수리 여부를 확인하고 적는 표입니다.</div><table class="tl"><thead><tr><th style="width:40px">번호</th><th style="width:90px">위치</th><th>원인</th><th>권장 수리</th><th style="width:74px;white-space:nowrap">수리 확인</th><th style="width:72px">확인일</th></tr></thead><tbody>'
+   +(causes.length?causes.map(function(x,j){return '<tr><td>'+(j+1)+'</td><td>'+esc(winName(x.w,x.i))+'</td><td class="l">'+esc(x.n)+'</td><td class="l">'+esc(CAUSE_FIX[x.k]||"-")+'</td><td class="cbx">☐</td><td></td></tr>'}).join(""):'<tr><td colspan="6">-</td></tr>')+'</tbody></table></div>';
+  // 8. 다음 단계 안내
+  var hasNew=S.wins.some(function(w){return w.age===AGES[0]}),hasOne=S.wins.some(function(w){return w.age===AGES[1]});
+  H+='<div class="pblock">'+sh("8. 다음 단계 안내")+'<table class="ti">'
+   +'<tr><th>수리 요청</th><td>이 보고서의 창호별 상세와 사진을 '+(hasNew&&!hasOne?'건설사(사업주체) 하자 접수':hasOne&&!hasNew?'시공업체 보증 접수':'건설사 하자 접수 또는 시공업체 보증 접수')+'에 그대로 쓰실 수 있습니다.</td></tr>'
+   +(hasNew?'<tr><th>신축 창호</th><td>입주 3년 이내라면 창호공사 하자담보책임기간(인도일부터 3년) 안에 있어 하자보수를 요청할 수 있습니다. 이 보고서와 사진을 보관해 두시기 바랍니다.</td></tr>':'')
+   +(hasOne?'<tr><th>원데이 교체 창호</th><td>공동주택 하자담보 대상이 아니라 시공업체와의 계약·보증에 따라 처리됩니다. 보증 기간과 내용을 먼저 확인하시기 바랍니다.</td></tr>':'')
+   +'<tr><th>수리 확인</th><td>수리가 끝나면 위 수리 확인표로 항목마다 다시 확인하시기 바랍니다. 재점검이 필요하시면 연락 주십시오.</td></tr>'
+   +'<tr><th>다시 확인할 때</th><td>외풍은 바람이 세고 실내외 온도차가 큰 날 더 크게 나타납니다. 그런 날 다시 확인하시기를 권합니다.</td></tr>'
+   +'<tr><th>문의</th><td>청개구리샤시 · 전화 010-2322-0949</td></tr></table></div>';
+  // 9. 점검 기준과 방법
+  var usedStd=S.wins.some(function(w){return w.age===AGES[1]&&w.year});
+  H+='<div class="pblock">'+sh("9. 점검 기준과 방법")+'<ul class="bl">'
+   +'<li>창짝·창틀 제작 치수, 창틀 변형, 모헤어 밀착, 풍지판, 물구멍 타공, 제품 단열, 창틀 주위 단열 시공을 항목별로 눈으로 확인하고 일반·열화상·초음파 사진으로 기록했습니다.</li>'
+   +'<li>실외 온도와 바람은 점검 위치의 기상 자료(지상 10m 기준) 또는 현장 입력값이며, 실내 이슬점은 실내 온도·습도로 계산했습니다.</li>'
+   +(usedStd?'<li>창호 단열 기준은 법제처 「건축물의 설비기준 등에 관한 규칙」과 「건축물의 에너지절약설계기준」 연혁을 참고했으며, 실제 적용 기준은 허가 신청 시점에 따라 달라질 수 있습니다.</li>':'')
+   +'<li>'+esc(CFG.NOTICE)+'</li>'
+   +'<li>점검한 뒤에 생긴 손상과, 가려져 있어 볼 수 없었던 부분은 이 보고서에 담기지 않았습니다.</li></ul>'
+   +'<div class="endnote">※ 본 보고서는 창호 외풍 점검 참고 자료이며 법적 효력이 없습니다. · 보고서 번호 '+repNo+'</div></div>';
+  var area=$("#print-area");area.className="rp";area.innerHTML=H;
 }
-function pdfName(){var s=($("#c_site").value||"현장").replace(/[\\/:*?"<>|]+/g,"").replace(/\s+/g," ").trim().slice(0,40);return "청개구리샤시_외풍점검_"+s+"_"+($("#c_date").value||today())+".pdf"}
+function pdfName(){var s=($("#c_site").value||"현장").replace(/[\\/:*?"<>|]+/g,"").replace(/\s+/g," ").trim().slice(0,40);return "창호외풍점검보고서_"+s+"_"+($("#c_date").value||today())+".pdf"}
 function savePDF(){
   if(!report()){toast("부위별 외풍 점검에서 항목을 하나 이상 체크해 주세요");return}
   if(!window.jspdf||!window.html2canvas){toast("PDF 모듈을 불러오는 중입니다. 잠시 후 다시 눌러 주세요");return}
@@ -610,9 +704,10 @@ function savePDF(){
   var area=$("#print-area");area.style.cssText="display:block;position:fixed;left:-10000px;top:0;width:760px;background:#fff;color:#111";
   var pdf=new window.jspdf.jsPDF("p","mm","a4"),mL=14,mT=14,pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight(),cw=pw-mL*2,y=mT;
   var blocks=Array.prototype.slice.call(area.querySelectorAll(".pblock"));
-  function step(i){if(i>=blocks.length){area.style.cssText="display:none";pdf.save(pdfName());toast("PDF 저장 완료 — '내 파일 > 다운로드' 폴더를 확인하세요");return}
-    window.html2canvas(blocks[i],{scale:2,backgroundColor:"#ffffff"}).then(function(cv){var ih=cv.height*cw/cv.width;if(y+ih>ph-mT&&y>mT){pdf.addPage();y=mT}pdf.addImage(cv.toDataURL("image/jpeg",0.9),"JPEG",mL,y,cw,ih);y+=ih+3.5;step(i+1)}).catch(function(){area.style.cssText="display:none";toast("PDF 생성 실패 — 다시 시도해 주세요")})}
-  step(0);
+  function step(i){if(i>=blocks.length){area.style.cssText="display:none";var np=pdf.internal.getNumberOfPages();for(var pg=2;pg<=np;pg++){pdf.setPage(pg);pdf.setFontSize(8);pdf.setTextColor(150);pdf.text(String(pg-1)+" / "+String(np-1),pw/2,ph-6,{align:"center"})}pdf.save(pdfName());toast("PDF 저장 완료 — '내 파일 > 다운로드' 폴더를 확인하세요");return}
+    window.html2canvas(blocks[i],{scale:2,backgroundColor:"#ffffff"}).then(function(cv){var ih=cv.height*cw/cv.width;if(blocks[i].classList.contains("newpage")&&y>mT){pdf.addPage();y=mT}if(y+ih>ph-mT&&y>mT){pdf.addPage();y=mT}if(ih>ph-mT*2){ih=ph-mT*2}pdf.addImage(cv.toDataURL("image/jpeg",0.9),"JPEG",mL,y,cw,ih);y+=ih+3.5;step(i+1)}).catch(function(){area.style.cssText="display:none";toast("PDF 생성 실패 — 다시 시도해 주세요")})}
+  var go=function(){var imgs=[].slice.call(area.querySelectorAll("img")).filter(function(im){return !im.complete});if(!imgs.length){step(0);return}var left=imgs.length;imgs.forEach(function(im){im.onload=im.onerror=function(){if(--left===0)step(0)}})};
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(go);else go();
 }
 
 // ── 음성 입력 (🎤 버튼 바로 앞 입력칸에 이어 쓰기)
