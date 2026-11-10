@@ -251,6 +251,16 @@ footer .ph{color:var(--brand-700);font-weight:800}
 .rp ul.bl{margin:0;padding-left:4px;list-style:none;font-size:11.5px;line-height:1.9;color:#33424c}
 .rp ul.bl li:before{content:"· "}
 .rp .endnote{font-size:9.5px;color:#9aa3a8;text-align:center;border-top:1px solid #e3e9e6;margin-top:16px;padding-top:9px}
+/* 폰 시인성: 좌우 여백 최소화 */
+.wrap{padding:0 3px}
+.card{border-radius:16px;margin:6px 0}
+.card-head{padding:9px 8px}
+.card-body{padding:0 7px 8px}
+.loc{border-radius:12px}
+.loc-pad{padding:9px 6px}
+.loc-head{padding:7px 6px}
+#c_site{font-size:13.5px;height:32px}
+#c_date{height:32px;font-size:12.5px;padding:0 4px;text-align:center}
 /* 창호 줄: 번호 | 위치 | 종류 | 구분 | 준공 | 삭제 — 폭을 고르게 */
 .loc-head{display:grid;grid-template-columns:18px minmax(0,1.15fr) minmax(0,1fr) minmax(0,.95fr) minmax(0,1fr) auto;align-items:center}
 .loc-head .typesel{width:100%;flex:none;min-width:0;padding:5px 13px 5px 6px;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M1 1l3 3 3-3' stroke='%236B7A72' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 4px center;text-overflow:clip}
@@ -338,7 +348,7 @@ table.r-res td.l{text-align:left}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 3.4</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 3.5</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -350,7 +360,7 @@ table.r-res td.l{text-align:left}
       <span class="chev">▼</span>
     </div>
     <div class="card-body">
-      <div class="row2" style="grid-template-columns:1fr 132px">
+      <div class="row2" style="grid-template-columns:1fr 106px;gap:7px">
         <div class="field"><label><span class="stepno">1</span>현장 / 고객명</label><div class="micwrap"><input class="inp" id="c_site" placeholder="예 : 아파트명 101동 101호"><button type="button" class="mic" aria-label="음성 입력"></button></div></div>
         <div class="field"><label>점검일자</label><input class="inp" id="c_date" type="date"></div>
       </div>
