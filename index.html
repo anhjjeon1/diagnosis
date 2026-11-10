@@ -294,7 +294,7 @@ table.r-res td.l{text-align:left}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 3.2</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 3.3</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -328,7 +328,7 @@ table.r-res td.l{text-align:left}
       <div id="winList"></div>
       <div class="act-line">
         <button class="add-win" id="btnAddWin">＋ 창호 추가</button>
-        <button class="btn btn-ai" id="goAi"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/></svg>종합 소견</button>
+        <button class="btn btn-ai" id="goAi"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/></svg>진단 의견</button>
       </div>
     </div>
   </section>
@@ -491,7 +491,7 @@ function updateSteps(){
 }
 function updateDew(){var dp=dewPoint();$("#dewOut").value=dp===null?"":dp}
 
-// ── 종합 소견 (규칙 기반, 입력값만 사용)
+// ── 진단 의견 (규칙 기반, 입력값만 사용)
 function report(){
   var e=S.env,L=[],total=0;
   var tO=num(e.tOut),tI=num(e.tIn),wd=num(e.wind);
@@ -548,8 +548,8 @@ function report(){
 }
 function renderAI(){
   var r=report(),box=$("#aiReport");
-  if(!r){box.innerHTML='<div class="ai empty">부위별 외풍 점검에서 항목을 하나 이상 체크하면 종합 소견이 표시됩니다.</div>';return}
-  box.innerHTML='<div class="ai"><div class="hl">✨ 종합 소견<span class="grade" style="background:'+r.color+'">'+r.grade+'</span></div><ul>'+r.lines.map(function(s){var sub=/^\s+·\s/.test(s);return '<li'+(sub?' style="list-style:none;margin-left:-2px"':'')+'>'+esc(s.replace(/^\s+·\s/,"└ "))+'</li>'}).join("")+'</ul></div>';
+  if(!r){box.innerHTML='<div class="ai empty">부위별 외풍 점검에서 항목을 하나 이상 체크하면 진단 의견이 표시됩니다.</div>';return}
+  box.innerHTML='<div class="ai"><div class="hl">✨ 진단 의견<span class="grade" style="background:'+r.color+'">'+r.grade+'</span></div><ul>'+r.lines.map(function(s){var sub=/^\s+·\s/.test(s);return '<li'+(sub?' style="list-style:none;margin-left:-2px"':'')+'>'+esc(s.replace(/^\s+·\s/,"└ "))+'</li>'}).join("")+'</ul></div>';
 }
 
 // ── 저장 (사진 제외)
@@ -598,7 +598,7 @@ function buildPrint(){
    +'<div class="pblock"><table class="r-info"><tr><th>현장 / 고객명</th><td>'+site+'</td><th>점검일자</th><td>'+date+'</td></tr>'+(($("#c_req").value||"").trim()?'<tr><th>의뢰자 의견</th><td colspan="3">'+esc($("#c_req").value.trim()).replace(/\n/g,"<br>")+'</td></tr>':'')+'<tr><th>점검 조건</th><td colspan="3">'+(cond.join(" · ")||"-")+'</td></tr><tr><th>점검 방법</th><td colspan="3">창짝·창틀 제작 치수, 창틀 변형, 모헤어 밀착, 풍지판, 물구멍 타공, 제품 단열, 창틀 주위 단열 시공을 항목별로 확인하고 열화상·초음파 등 장비 사진으로 기록</td></tr><tr><th>종합 판정</th><td colspan="3"><b style="color:'+(r?r.color:"#333")+'">'+(r?r.grade:"-")+'</b></td></tr></table></div>'
    +(S.wins.some(function(w){return w.surf||w.fp||w.age||num(w.sill)!==null||sz(w)})?'<div class="pblock"><div class="r-sec">창호 설치 상태</div><table class="r-res"><thead><tr><th style="text-align:left">위치</th><th>창 종류</th><th>구분</th><th>창틀 크기(mm)</th><th>틈 길이</th><th>설치면 마감</th><th>풍지판</th><th>창틀과 바닥 높이</th></tr></thead><tbody>'+S.wins.map(function(w,i){return '<tr><td class="l">'+esc(winName(w,i))+'</td><td>'+esc(w.type)+'</td><td>'+esc((w.age||"-")+(w.age===AGES[1]&&w.year?" · "+w.year+"년 준공":""))+'</td><td>'+(sz(w)?esc(w.fw+"×"+w.fh):"-")+'</td><td>'+(sz(w)?"약 "+sz(w).crack+"m":"-")+'</td><td>'+esc(w.surf||"-")+'</td><td>'+esc(w.fp||"-")+'</td><td>'+(num(w.sill)!==null?esc(w.sill)+"cm":"-")+'</td></tr>'}).join("")+'</tbody></table></div>':'')
    +'<div class="pblock"><div class="r-sec">1. 외풍 원인 확인</div><table class="r-res"><thead><tr><th style="text-align:left">위치</th><th style="text-align:left">확인된 원인</th><th style="text-align:left">메모</th></tr></thead><tbody>'+(rows||'<tr><td colspan="3">확인된 원인 없음</td></tr>')+'</tbody></table></div>'
-   +(r?'<div class="pblock"><div class="r-sec">2. 종합 소견</div><ul class="r-ai">'+r.lines.map(function(s){var sub=/^\s+·\s/.test(s);return '<li'+(sub?' style="list-style:none;margin-left:-2px"':'')+'>'+esc(s.replace(/^\s+·\s/,"└ "))+'</li>'}).join("")+'</ul></div>':'')
+   +(r?'<div class="pblock"><div class="r-sec">2. 진단 의견</div><ul class="r-ai">'+r.lines.map(function(s){var sub=/^\s+·\s/.test(s);return '<li'+(sub?' style="list-style:none;margin-left:-2px"':'')+'>'+esc(s.replace(/^\s+·\s/,"└ "))+'</li>'}).join("")+'</ul></div>':'')
    +(photos?'<div class="pblock"><div class="r-sec">3. 점검 사진</div></div>'+photos:'')
    +'<div class="pblock"><div class="r-notice">※ '+esc(CFG.NOTICE)+'</div><div class="r-foot">'+esc(CFG.COMPANY)+' &nbsp;|&nbsp; 발행일 '+date+'</div></div>';
 }
