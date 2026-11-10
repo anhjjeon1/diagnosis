@@ -251,6 +251,7 @@ footer .ph{color:var(--brand-700);font-weight:800}
 .part-photo .photo-thumb,.part-photo .photo-thumb img{height:100%;max-height:none}
 .fix-item.sug{border-color:#9CC5E8}
 .fix-item .sugtag{margin-left:auto;font-size:10px;font-weight:800;color:#1565C0;background:#EEF6FD;border-radius:999px;padding:2px 6px;white-space:nowrap}
+#aiCard.hide{display:none}
 .act-line{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
 .act-line .btn-ai{padding:10px;font-size:13px;font-weight:750;border-radius:var(--r-md)}
 .add-win{display:block;width:100%;margin:0;padding:10px;font-size:13px;font-weight:750;border-radius:var(--r-md);background:var(--brand-50);color:var(--brand-700);border:1.5px dashed #B6D8BD;cursor:pointer}
@@ -260,7 +261,7 @@ table.r-res td.l{text-align:left}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 2.3</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 2.4</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -299,13 +300,8 @@ table.r-res td.l{text-align:left}
     </div>
   </section>
 
-  <section class="card collapsible closed" id="aiCard">
-    <div class="card-head">
-      <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5 13.9 11.4 12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"/></svg></div>
-      <div><h2>종합 소견 · 외풍 자리 정리</h2></div>
-      <span class="chev" style="margin-left:8px">▼</span>
-    </div>
-    <div class="card-body"><div id="aiReport"></div><a class="link-dew" href="https://anhjjeon1.github.io/dewpoint-pro/" target="_blank" rel="noopener">❄️ 결로 문의도 있으면 → 결로진단앱 열기</a></div>
+  <section class="card hide" id="aiCard">
+    <div class="card-body" style="padding-top:12px"><div id="aiReport"></div><a class="link-dew" href="https://anhjjeon1.github.io/dewpoint-pro/" target="_blank" rel="noopener">❄️ 결로 문의도 있으면 → 결로진단앱 열기</a></div>
   </section>
 
   <div class="foot-actions">
@@ -476,7 +472,7 @@ function report(){
 function renderAI(){
   var r=report(),box=$("#aiReport");
   if(!r){box.innerHTML='<div class="ai empty">부위별 외풍 점검에서 항목을 하나 이상 체크하면 종합 소견이 표시됩니다.</div>';return}
-  box.innerHTML='<div class="ai"><div class="hl">✨ 종합 소견<span class="grade" style="background:'+r.color+'">'+r.grade+'</span></div><ul>'+r.lines.map(function(s){return '<li>'+esc(s.replace(/^\s+·\s/,"└ "))+'</li>'}).join("")+'</ul></div>';
+  box.innerHTML='<div class="ai"><div class="hl">✨ 종합 소견<span class="grade" style="background:'+r.color+'">'+r.grade+'</span></div><ul>'+r.lines.map(function(s){var sub=/^\s+·\s/.test(s);return '<li'+(sub?' style="list-style:none;margin-left:-2px"':'')+'>'+esc(s.replace(/^\s+·\s/,"└ "))+'</li>'}).join("")+'</ul></div>';
 }
 
 // ── 저장 (사진 제외)
@@ -525,7 +521,7 @@ function buildPrint(){
    +'<div class="pblock"><table class="r-info"><tr><th>현장 / 고객명</th><td>'+site+'</td><th>점검일자</th><td>'+date+'</td></tr>'+(($("#c_req").value||"").trim()?'<tr><th>의뢰자 의견</th><td colspan="3">'+esc($("#c_req").value.trim()).replace(/\n/g,"<br>")+'</td></tr>':'')+'<tr><th>점검 조건</th><td colspan="3">'+(cond.join(" · ")||"-")+'</td></tr><tr><th>점검 방법</th><td colspan="3">창짝·창틀 제작 치수, 창틀 변형, 모헤어 밀착, 풍지판, 물구멍 타공, 제품 단열, 창틀 주위 단열 시공을 항목별로 확인하고 열화상·초음파 등 장비 사진으로 기록</td></tr><tr><th>종합 판정</th><td colspan="3"><b style="color:'+(r?r.color:"#333")+'">'+(r?r.grade:"-")+'</b></td></tr></table></div>'
    +(S.wins.some(function(w){return w.surf||w.fp||num(w.sill)!==null||sz(w)})?'<div class="pblock"><div class="r-sec">창호 설치 상태</div><table class="r-res"><thead><tr><th style="text-align:left">위치</th><th>창 종류</th><th>창틀 크기(mm)</th><th>틈 길이</th><th>설치면 마감</th><th>풍지판</th><th>창틀 하부 높이</th></tr></thead><tbody>'+S.wins.map(function(w,i){return '<tr><td class="l">'+esc(winName(w,i))+'</td><td>'+esc(w.type)+'</td><td>'+(sz(w)?esc(w.fw+"×"+w.fh):"-")+'</td><td>'+(sz(w)?"약 "+sz(w).crack+"m":"-")+'</td><td>'+esc(w.surf||"-")+'</td><td>'+esc(w.fp||"-")+'</td><td>'+(num(w.sill)!==null?esc(w.sill)+"cm":"-")+'</td></tr>'}).join("")+'</tbody></table></div>':'')
    +'<div class="pblock"><div class="r-sec">1. 외풍 원인 확인</div><table class="r-res"><thead><tr><th style="text-align:left">위치</th><th style="text-align:left">확인된 원인</th><th style="text-align:left">메모</th></tr></thead><tbody>'+(rows||'<tr><td colspan="3">확인된 원인 없음</td></tr>')+'</tbody></table></div>'
-   +(r?'<div class="pblock"><div class="r-sec">2. 종합 소견</div><ul class="r-ai">'+r.lines.map(function(s){return '<li>'+esc(s.replace(/^\s+·\s/,"└ "))+'</li>'}).join("")+'</ul></div>':'')
+   +(r?'<div class="pblock"><div class="r-sec">2. 종합 소견</div><ul class="r-ai">'+r.lines.map(function(s){var sub=/^\s+·\s/.test(s);return '<li'+(sub?' style="list-style:none;margin-left:-2px"':'')+'>'+esc(s.replace(/^\s+·\s/,"└ "))+'</li>'}).join("")+'</ul></div>':'')
    +(photos?'<div class="pblock"><div class="r-sec">3. 점검 사진</div></div>'+photos:'')
    +'<div class="pblock"><div class="r-notice">※ '+esc(CFG.NOTICE)+'</div><div class="r-foot">'+esc(CFG.COMPANY)+' &nbsp;|&nbsp; 발행일 '+date+'</div></div>';
 }
@@ -570,9 +566,8 @@ document.addEventListener("DOMContentLoaded",function(){
   $("#c_date").addEventListener("input",save);
   $("#c_req").addEventListener("input",function(){renderAI();updateSteps();save()});
   $("#condHead").addEventListener("click",function(){$("#condCard").classList.toggle("closed")});
-  $("#aiCard .card-head").addEventListener("click",function(){$("#aiCard").classList.toggle("closed");renderAI()});
   $("#btnAddWin").addEventListener("click",function(){S.wins.push(newWin());renderWins();save();toast("창호를 추가했습니다")});
-  $("#goAi").addEventListener("click",function(){renderAI();var el=$("#aiCard");el.classList.remove("closed");el.scrollIntoView({behavior:"smooth",block:"start"});el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")});
+  $("#goAi").addEventListener("click",function(){renderAI();var el=$("#aiCard");el.classList.remove("hide");el.scrollIntoView({behavior:"smooth",block:"start"});el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")});
   $("#btnSave").addEventListener("click",savePDF);
   $("#btnReset").addEventListener("click",function(){if(!confirm("모든 입력을 지우고 새로 시작할까요?"))return;localStorage.removeItem(CFG.STORAGE_KEY);S={env:{tOut:"",wind:"",wdir:"",tIn:"",rh:"",fan:false,src:""},wins:[newWin()]};$("#c_site").value="";$("#c_req").value="";$("#c_date").value=today();syncEnvInputs();renderWins();renderAI();toast("초기화되었습니다");autoWeather()});
   if(!load())S.wins=[newWin()];
