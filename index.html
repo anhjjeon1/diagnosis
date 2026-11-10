@@ -476,11 +476,15 @@ body{padding-bottom:calc(92px + var(--safe-b))}
 #bbar .btn svg{width:13px;height:13px}
 body{padding-bottom:calc(66px + var(--safe-b))}
 .toast{bottom:calc(66px + var(--safe-b))}
+
+/* 진단 의견: 기타 줄 바로 아래 (V4.1) */
+.ai-inline{margin:4px 0 6px;scroll-margin-top:70px}
+#aiCard.hide{display:none}
 </style>
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 4.0</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 4.1</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -507,6 +511,7 @@ body{padding-bottom:calc(66px + var(--safe-b))}
   <section class="card">
     <div class="card-body" style="padding-top:14px">
       <div id="winList"></div>
+      <div class="hide ai-inline" id="aiCard"><div id="aiReport"></div><a class="link-dew" href="https://anhjjeon1.github.io/dewpoint-pro/" target="_blank" rel="noopener">❄️ 결로 문의도 있으면 → 결로진단앱 열기</a></div>
       <div class="act-line" id="bbar">
         <button class="btn btn-reset" id="btnReset">초기화</button>
         <button class="add-win" id="btnAddWin">＋ 창호 추가</button>
@@ -517,9 +522,7 @@ body{padding-bottom:calc(66px + var(--safe-b))}
     </div>
   </section>
 
-  <section class="card hide" id="aiCard">
-    <div class="card-body" style="padding-top:12px"><div id="aiReport"></div><a class="link-dew" href="https://anhjjeon1.github.io/dewpoint-pro/" target="_blank" rel="noopener">❄️ 결로 문의도 있으면 → 결로진단앱 열기</a></div>
-  </section>
+
 
   
 </div>
@@ -893,7 +896,7 @@ document.addEventListener("DOMContentLoaded",function(){
   $("#c_date").addEventListener("input",save);
   $("#c_req").addEventListener("input",function(){renderAI();updateSteps();save()});
   $("#btnAddWin").addEventListener("click",function(){S.wins.push(newWin());renderWins();save();toast("창호를 추가했습니다")});
-  $("#goAi").addEventListener("click",function(){renderAI();var el=$("#aiCard");el.classList.remove("hide");el.scrollIntoView({behavior:"smooth",block:"start"});el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")});
+  $("#goAi").addEventListener("click",function(){renderAI();var el=$("#aiCard");el.classList.remove("hide");var y=el.getBoundingClientRect().top+window.pageYOffset-70;window.scrollTo(0,Math.max(0,y));el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")});
   $("#btnSave").addEventListener("click",savePDF);
   $("#btnReset").addEventListener("click",function(){if(!confirm("모든 입력을 지우고 새로 시작할까요?"))return;localStorage.removeItem(CFG.STORAGE_KEY);S={env:{tOut:"",wind:"",wdir:"",tIn:"",rh:"",fan:false,src:""},wins:[newWin()]};$("#c_site").value="";$("#c_req").value="";$("#c_date").value=today();syncEnvInputs();renderWins();renderAI();toast("초기화되었습니다");autoWeather()});
   if(!load())S.wins=[newWin()];
