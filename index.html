@@ -177,13 +177,11 @@ footer .ph{color:var(--brand-700);font-weight:800}
 .modetabs a{flex:1;text-align:center;font-size:12.5px;font-weight:750;padding:6px 0;border-radius:999px;text-decoration:none;color:var(--ink-3);background:var(--surface-2);border:1px solid var(--line)}
 .modetabs a.on{background:var(--brand);color:#fff;border-color:var(--brand)}
 .envgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.envgrid .field{margin-bottom:0}
-.envgrid .field label{font-size:11.5px;min-height:16px;margin-bottom:3px}
-.envgrid .inp{padding:6px 8px;font-size:14px;text-align:center}
-.wx-btn{margin-top:8px;width:100%;padding:8px;font-size:12.5px;font-weight:750;border-radius:var(--r-sm);border:1.5px dashed #9CC5E8;background:#EEF6FD;color:#1565C0;cursor:pointer}
-.wx-src{font-size:11px;color:var(--ink-3);margin-top:4px;text-align:center}
-.fan-row{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;font-weight:650;color:var(--ink-2)}
-.fan-row input{width:18px;height:18px;accent-color:var(--brand)}
+.fl{position:relative;display:block;margin:0}
+.fl span{position:absolute;left:9px;top:4px;font-size:10px;font-weight:750;color:var(--ink-3);pointer-events:none;letter-spacing:0}
+.envgrid .inp{height:42px;padding:15px 6px 2px;font-size:15px;font-weight:700;text-align:center}
+.envgrid .inp::placeholder{font-size:12px;font-weight:600}
+.wx-src{font-size:10.5px;color:var(--ink-3);margin-top:5px;text-align:center}
 .typesel{flex:0 0 auto;font-size:12px;font-weight:700;padding:5px 6px;border:1.5px solid var(--line);border-radius:9px;background:#fff;color:var(--ink-2)}
 .part{border:1px solid var(--line);border-radius:12px;padding:6px 9px;margin-top:5px;background:#fff}
 .part.lv2{border-color:#EBC77A;background:#FFFBF1}
@@ -249,7 +247,7 @@ table.r-res td.l{text-align:left}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 외풍 점검</h1><span class="ver" id="verBadge">V 1.5</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 외풍 점검</h1><span class="ver" id="verBadge">V 1.6</span></div>
   <nav class="modetabs"><a href="noise.html">차음 수리 전·후</a><a href="./" class="on">외풍 점검</a></nav>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
@@ -267,16 +265,14 @@ table.r-res td.l{text-align:left}
         <div class="field"><label>점검일자</label><input class="inp" id="c_date" type="date"></div>
       </div>
       <div class="envgrid" style="margin-top:4px">
-        <div class="field"><label>실외 온도(℃)</label><input class="inp" inputmode="decimal" data-env="tOut" placeholder="-"></div>
-        <div class="field"><label>바람(m/s)</label><input class="inp" inputmode="decimal" data-env="wind" placeholder="-"></div>
-        <div class="field"><label>바람 방향</label><input class="inp" data-env="wdir" placeholder="예: 북서"></div>
-        <div class="field"><label>실내 온도(℃)</label><input class="inp" inputmode="decimal" data-env="tIn" placeholder="-"></div>
-        <div class="field"><label>실내 습도(%)</label><input class="inp" inputmode="decimal" data-env="rh" placeholder="-"></div>
-        <div class="field"><label>이슬점(℃)</label><input class="inp" id="dewOut" readonly placeholder="자동" style="background:var(--surface-2)"></div>
+        <label class="fl"><span>실외 온도 ℃</span><input class="inp" inputmode="decimal" data-env="tOut" placeholder="자동"></label>
+        <label class="fl"><span>바람 m/s</span><input class="inp" inputmode="decimal" data-env="wind" placeholder="자동"></label>
+        <label class="fl"><span>바람 방향</span><input class="inp" data-env="wdir" placeholder="자동"></label>
+        <label class="fl"><span>실내 온도 ℃</span><input class="inp" inputmode="decimal" data-env="tIn"></label>
+        <label class="fl"><span>실내 습도 %</span><input class="inp" inputmode="decimal" data-env="rh"></label>
+        <label class="fl"><span>이슬점 ℃</span><input class="inp" id="dewOut" readonly placeholder="자동" style="background:var(--surface-2)"></label>
       </div>
-      <button class="wx-btn" id="btnWx">📍 지금 이 자리 날씨 불러오기 (실외 온도·바람)</button>
       <div class="wx-src" id="wxSrc"></div>
-      <label class="fan-row"><input type="checkbox" data-env="fan">주방 후드·욕실 환기팬을 켜고 점검 (실내 감압)</label>
     </div>
   </section>
 
@@ -417,8 +413,8 @@ function report(){
   if(tI!==null)cond.push("실내 "+tI+"℃");
   if(tO!==null&&tI!==null)cond.push("실내외 온도차 "+r1(tI-tO)+"℃");
   if(wd!==null)cond.push("바람 "+wd+"m/s"+(e.wdir?("("+e.wdir+"풍)"):""));
-  if(cond.length)L.push("점검 당시 조건은 "+cond.join(", ")+"입니다."+(e.fan?" 주방 후드와 욕실 환기팬을 켜서 실내를 약하게 감압한 상태로 점검했습니다.":""));
-  var weak=(wd!==null&&wd<2)&&(tO===null||tI===null||(tI-tO)<10)&&!e.fan;
+  if(cond.length)L.push("점검 당시 조건은 "+cond.join(", ")+"입니다.");
+  var weak=(wd!==null&&wd<2)&&(tO===null||tI===null||(tI-tO)<10);
   if(weak)L.push("바람이 약하고 실내외 온도차도 크지 않은 날이라, 바람 센 날보다 외풍이 작게 나타났을 수 있습니다.");
   var agg={},insGap=false;
   S.wins.forEach(function(w,i){
@@ -457,17 +453,20 @@ function syncEnvInputs(){document.querySelectorAll("[data-env]").forEach(functio
 
 // ── 현재 위치 날씨 (Open-Meteo)
 function fetchWeather(){
-  if(!navigator.geolocation){toast("이 기기는 위치 확인을 지원하지 않습니다");return}
-  toast("현재 위치 확인 중…");
+  var ws=$("#wxSrc");
+  if(!navigator.geolocation){ws.textContent="이 기기는 위치 확인이 안 돼 실외 값을 직접 입력해 주세요";return}
+  ws.textContent="실외 온도·바람 자동 입력 중…";
   navigator.geolocation.getCurrentPosition(function(pos){
     var u="https://api.open-meteo.com/v1/forecast?latitude="+pos.coords.latitude.toFixed(3)+"&longitude="+pos.coords.longitude.toFixed(3)+"&current=temperature_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m&wind_speed_unit=ms&timezone=Asia%2FSeoul";
-    fetch(u).then(function(r){return r.json()}).then(function(d){var c=d&&d.current;if(!c){toast("날씨를 불러오지 못했습니다");return}
+    fetch(u).then(function(r){return r.json()}).then(function(d){var c=d&&d.current;if(!c){ws.textContent="날씨를 불러오지 못해 실외 값을 직접 입력해 주세요";return}
       S.env.tOut=String(r1(c.temperature_2m));S.env.wind=String(r1(c.wind_speed_10m));S.env.wdir=WDIR[Math.round(((c.wind_direction_10m%360)/22.5))%16];
-      S.env.src="Open-Meteo 기상 자료 "+(c.time||"").replace("T"," ")+" · 순간최대 "+r1(c.wind_gusts_10m)+"m/s (지상 10m 기준, 현장 체감과 다를 수 있음)";
-      syncEnvInputs();save();renderAI();toast("실외 온도·바람을 불러왔습니다");
-    }).catch(function(){toast("날씨를 불러오지 못했습니다 — 직접 입력해 주세요")});
-  },function(){toast("위치 권한이 없어 날씨를 불러오지 못했습니다")},{timeout:10000,maximumAge:600000});
+      S.env.src="실외 값 자동 입력 · Open-Meteo "+(c.time||"").replace("T"," ")+" · 순간최대 "+r1(c.wind_gusts_10m)+"m/s (지상 10m 기준)";
+      syncEnvInputs();save();renderAI();
+    }).catch(function(){ws.textContent="날씨를 불러오지 못해 실외 값을 직접 입력해 주세요"});
+  },function(){ws.textContent="위치 권한이 없어 실외 값을 직접 입력해 주세요"},{timeout:10000,maximumAge:600000});
 }
+// 오늘 점검이고 실외 값이 비어 있으면 자동으로 불러오기
+function autoWeather(){if(!S.env.tOut&&!S.env.wind&&($("#c_date").value||today())===today())fetchWeather()}
 
 // ── PDF
 function buildPrint(){
@@ -486,7 +485,7 @@ function buildPrint(){
   });
   $("#print-area").innerHTML=
     '<div class="pblock"><div class="r-head"><div class="r-title">창호 외풍 점검 소견서</div><div class="r-org">'+esc(CFG.COMPANY)+'</div></div></div>'
-   +'<div class="pblock"><table class="r-info"><tr><th>현장 / 고객명</th><td>'+site+'</td><th>점검일자</th><td>'+date+'</td></tr><tr><th>점검 조건</th><td colspan="3">'+(cond.join(" · ")||"-")+(e.fan?"<br>주방 후드·욕실 환기팬 가동(실내 감압) 상태에서 점검":"")+'</td></tr><tr><th>점검 방법</th><td colspan="3">창짝·창틀 제작 치수, 창틀 변형, 모헤어 밀착, 풍지판, 물구멍 타공, 제품 단열, 창틀 주위 단열 시공을 항목별로 확인하고 열화상·초음파 등 장비 사진으로 기록</td></tr><tr><th>종합 판정</th><td colspan="3"><b style="color:'+(r?r.color:"#333")+'">'+(r?r.grade:"-")+'</b></td></tr></table></div>'
+   +'<div class="pblock"><table class="r-info"><tr><th>현장 / 고객명</th><td>'+site+'</td><th>점검일자</th><td>'+date+'</td></tr><tr><th>점검 조건</th><td colspan="3">'+(cond.join(" · ")||"-")+'</td></tr><tr><th>점검 방법</th><td colspan="3">창짝·창틀 제작 치수, 창틀 변형, 모헤어 밀착, 풍지판, 물구멍 타공, 제품 단열, 창틀 주위 단열 시공을 항목별로 확인하고 열화상·초음파 등 장비 사진으로 기록</td></tr><tr><th>종합 판정</th><td colspan="3"><b style="color:'+(r?r.color:"#333")+'">'+(r?r.grade:"-")+'</b></td></tr></table></div>'
    +(S.wins.some(function(w){return w.surf||w.fp||num(w.sill)!==null})?'<div class="pblock"><div class="r-sec">창호 설치 상태</div><table class="r-res"><thead><tr><th style="text-align:left">위치</th><th>창 종류</th><th>설치면 마감</th><th>풍지판</th><th>창틀 하부 높이</th></tr></thead><tbody>'+S.wins.map(function(w,i){return '<tr><td class="l">'+esc(winName(w,i))+'</td><td>'+esc(w.type)+'</td><td>'+esc(w.surf||"-")+'</td><td>'+esc(w.fp||"-")+'</td><td>'+(num(w.sill)!==null?esc(w.sill)+"cm":"-")+'</td></tr>'}).join("")+'</tbody></table></div>':'')
    +'<div class="pblock"><div class="r-sec">1. 외풍 원인 확인</div><table class="r-res"><thead><tr><th style="text-align:left">위치</th><th style="text-align:left">확인된 원인</th><th style="text-align:left">메모</th></tr></thead><tbody>'+(rows||'<tr><td colspan="3">확인된 원인 없음</td></tr>')+'</tbody></table></div>'
    +(r?'<div class="pblock"><div class="r-sec">2. 종합 소견</div><ul class="r-ai">'+r.lines.map(function(s){return '<li>'+esc(s.replace(/^\s+·\s/,"└ "))+'</li>'}).join("")+'</ul></div>':'')
@@ -528,19 +527,18 @@ document.addEventListener("DOMContentLoaded",function(){
     else if(t.dataset.fix!==undefined){w.fix[+t.dataset.fix]=t.checked;renderWins()}
     else if(t.dataset.file){var f=t.files[0];if(!f)return;readPhoto(f,function(url){setPhoto(w,t.dataset.file,url);renderWins()});return}
     else return;renderAI();save()});
-  document.querySelectorAll("[data-env]").forEach(function(el){el.addEventListener(el.type==="checkbox"?"change":"input",function(){S.env[el.dataset.env]=el.type==="checkbox"?el.checked:el.value;if(el.dataset.env!=="fan"&&el.dataset.env!=="rh"&&el.dataset.env!=="tIn"){S.env.src="직접 입력";$("#wxSrc").textContent=""}updateDew();renderAI();save()})});
+  document.querySelectorAll("[data-env]").forEach(function(el){el.addEventListener(el.type==="checkbox"?"change":"input",function(){S.env[el.dataset.env]=el.type==="checkbox"?el.checked:el.value;if(el.dataset.env!=="rh"&&el.dataset.env!=="tIn"){S.env.src="실외 값 직접 입력";$("#wxSrc").textContent=S.env.src}updateDew();renderAI();save()})});
   $("#c_site").addEventListener("input",function(){updateSteps();save()});
   $("#c_date").addEventListener("input",save);
   $("#condHead").addEventListener("click",function(){$("#condCard").classList.toggle("closed")});
   $("#aiCard .card-head").addEventListener("click",function(){$("#aiCard").classList.toggle("closed");renderAI()});
-  $("#btnWx").addEventListener("click",fetchWeather);
   $("#btnAddWin").addEventListener("click",function(){S.wins.push(newWin());renderWins();save();toast("창호를 추가했습니다")});
   $("#goAi").addEventListener("click",function(){renderAI();var el=$("#aiCard");el.classList.remove("closed");el.scrollIntoView({behavior:"smooth",block:"start"});el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")});
   $("#btnSave").addEventListener("click",savePDF);
-  $("#btnReset").addEventListener("click",function(){if(!confirm("모든 입력을 지우고 새로 시작할까요?"))return;localStorage.removeItem(CFG.STORAGE_KEY);S={env:{tOut:"",wind:"",wdir:"",tIn:"",rh:"",fan:false,src:""},wins:[newWin()]};$("#c_site").value="";$("#c_date").value=today();syncEnvInputs();renderWins();renderAI();toast("초기화되었습니다")});
+  $("#btnReset").addEventListener("click",function(){if(!confirm("모든 입력을 지우고 새로 시작할까요?"))return;localStorage.removeItem(CFG.STORAGE_KEY);S={env:{tOut:"",wind:"",wdir:"",tIn:"",rh:"",fan:false,src:""},wins:[newWin()]};$("#c_site").value="";$("#c_date").value=today();syncEnvInputs();renderWins();renderAI();toast("초기화되었습니다");autoWeather()});
   if(!load())S.wins=[newWin()];
   if(!$("#c_date").value)$("#c_date").value=today();
-  syncEnvInputs();renderWins();renderAI();
+  syncEnvInputs();renderWins();renderAI();autoWeather();
 });
 </script>
 <script>
