@@ -258,7 +258,7 @@ table.r-res td.l{text-align:left}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 2.1</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 2.2</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -347,6 +347,16 @@ var FIX=[
  {n:"창짝 재제작",c:["small","wide"]},
  {n:"창틀 처짐 수리",c:["sag"]},
  {n:"창틀 변형 복원(벤딩)",c:["plumb","mohair"]}];
+var CAUSE_FIX={
+ small:"창짝 재제작 또는 마구리판 모헤어 보강",
+ wide:"잠금(크리센트) 위치 수정·풍지판 교체, 심하면 창짝 재제작",
+ sag:"창틀 처짐 수리·호차 높이 조절",
+ mohair:"창틀 변형 복원(벤딩)·모헤어 교체",
+ drain:"청개구리 기류차단 시스템 설치",
+ plumb:"창틀 변형 복원(벤딩)",
+ prod:"단열 성능이 높은 제품으로 교체 검토",
+ ins:"창틀 둘레 단열(사춤) 보수·외부 실리콘 재시공",
+ nofp:"풍지판 설치"};
 var DEVS=[{k:"th",n:"열화상 카메라 (FLIR E8)"},{k:"us",n:"초음파 카메라"},{k:"mr",n:"FLIR MR277"}];
 var WDIR=["북","북북동","북동","동북동","동","동남동","남동","남남동","남","남남서","남서","서남서","서","서북서","북서","북북서"];
 
@@ -385,7 +395,6 @@ function suggestedFix(w){var on=onKeys(w);return FIX.map(function(f){return f.c.
 
 function renderWins(){
   $("#winList").innerHTML=S.wins.map(function(w,i){
-    var sug=suggestedFix(w);
     return '<div class="loc"><div class="loc-head"><span class="loc-no">'+(i+1)+'</span>'
       +'<select class="typesel locsel'+(w.name?'':' empty')+'" data-wf="name" data-w="'+w.id+'"><option value=""'+(w.name?'':' selected')+' disabled>위치 선택</option>'+ROOMS.map(function(t){return '<option'+(t===w.name?' selected':'')+'>'+t+'</option>'}).join("")+'</select>'
       +(w.name==="기타"?'<input class="etc-inp" value="'+esc(w.nameEtc||"")+'" placeholder="위치 직접 입력" data-wf="nameEtc" data-w="'+w.id+'">':'')
@@ -395,7 +404,6 @@ function renderWins(){
       +'<div class="seg-label before" style="margin-top:0"><span class="stepno">2</span>창호 사진<span class="sizebox">가로<input class="db" inputmode="numeric" placeholder="mm" value="'+esc(w.fw)+'" data-wf="fw" data-w="'+w.id+'">×세로<input class="db" inputmode="numeric" placeholder="mm" value="'+esc(w.fh)+'" data-wf="fh" data-w="'+w.id+'">mm</span></div>'
       +'<div class="devgrp"><div class="devlab">일반 촬영</div><div class="devrow"><div class="photo-slot">'+photoHtml(w.front,"전면","front",w.id,"전면 촬영")+'</div><div class="photo-slot">'+photoHtml(w.close,"근접","close",w.id,"근접 촬영")+'</div></div></div>'
       +DEVS.map(function(d){return '<div class="devgrp"><div class="devlab">'+d.n+'</div><div class="devrow"><div class="photo-slot">'+photoHtml(w.ph[d.k+"F"],"전면",d.k+"F",w.id,"전면 촬영")+'</div><div class="photo-slot">'+photoHtml(w.ph[d.k+"C"],"근접",d.k+"C",w.id,"근접 촬영")+'</div></div></div>'}).join("")
-      +'<textarea class="prenote" rows="2" placeholder="고객이 말한 증상 (예: 겨울에 창가 쪽이 서늘하고 커튼이 흔들림)" data-wf="note" data-w="'+w.id+'">'+esc(w.note)+'</textarea>'
       +'<div class="seg-label before"><span class="stepno">3</span>창호 설치 상태</div>'
       +'<div class="drow"><b>설치면</b><div class="chips">'+["타일","단열재","탄성코트","페인트","기타"].map(function(s){return '<button class="chip'+(w.surf===s?' on':'')+'" data-act="surf" data-w="'+w.id+'" data-v="'+s+'">'+s+'</button>'}).join("")+'</div></div>'
       +'<div class="drow"><b>풍지판</b><div class="chips">'+["있음","없음"].map(function(s){return '<button class="chip'+(w.fp===s?' on':'')+'" data-act="fp" data-w="'+w.id+'" data-v="'+s+'">'+s+'</button>'}).join("")+'</div></div>'
@@ -407,8 +415,6 @@ function renderWins(){
           +(x.on?'<input class="memo-inp" placeholder="메모 (위치·정도 등)" data-cf="memo" data-w="'+w.id+'" data-k="'+c.k+'" value="'+esc(x.memo||"")+'">':'')
           +'</div>';
       }).join("")
-      +'<div class="seg-label before"><span class="stepno">5</span>권장 수리 <span style="font-size:11px;color:var(--ink-3);font-weight:650">(파란 테두리 = 점검 결과로 추천)</span></div>'
-      +'<div class="repair-grid">'+FIX.map(function(f,fi){var on=!!w.fix[fi];return '<label class="repair-item fix-item'+(on?' on':'')+(sug[fi]&&!on?' sug':'')+'"><input type="checkbox" data-fix="'+fi+'" data-w="'+w.id+'"'+(on?' checked':'')+'><span>'+esc(f.n)+'</span>'+(sug[fi]&&!on?'<span class="sugtag">추천</span>':'')+'</label>'}).join("")+'</div>'
       +'</div></div>';
   }).join("");
   updateSteps();
@@ -417,7 +423,7 @@ function renderWins(){
 function updateSteps(){
   $("#st1").classList.toggle("on",!!$("#c_site").value);
   $("#st2").classList.toggle("on",S.wins.some(function(w){return onKeys(w).length>0}));
-  $("#st3").classList.toggle("on",S.wins.some(function(w){return w.fix.some(Boolean)}));
+  $("#st3").classList.toggle("on",!!($("#c_req").value||"").trim());
 }
 function updateDew(){var dp=dewPoint();$("#dewOut").value=dp===null?"":dp}
 
@@ -440,7 +446,6 @@ function report(){
     var on=CHK.filter(function(c){return w.chk[c.k]&&w.chk[c.k].on});
     if(!on.length&&w.fp!=="없음")return;total+=on.length+(w.fp==="없음"?1:0);
     var s="'"+winName(w,i)+"'("+w.type+")에서 확인된 외풍 원인은 "+on.map(function(c){return c.n}).concat(w.fp==="없음"?["풍지판 없음"]:[]).join(", ")+"입니다.";
-    if(w.note)s+=" (증상: "+w.note+")";
     var inst=[];if(w.surf)inst.push("창호 설치면 마감 "+w.surf);if(w.fp==="있음")inst.push("풍지판 있음");if(num(w.sill)!==null)inst.push("창틀 하부 높이 바닥에서 "+w.sill+"cm");
     if(inst.length)s+=" 설치 상태는 "+inst.join(", ")+"입니다.";
     var z=sz(w);if(z)s+=" 창틀 크기는 "+z.txt+"입니다.";
@@ -460,8 +465,10 @@ function report(){
   }
   var aggK=Object.keys(agg).filter(function(k){return agg[k]>=2}).sort(function(a,b){return agg[b]-agg[a]});
   if(aggK.length)L.push("여러 창에서 공통으로 확인된 원인은 "+aggK.map(function(k){return k+"("+agg[k]+"곳)"}).join(", ")+"입니다.");
-  var fixL=[];S.wins.forEach(function(w,i){var f=FIX.filter(function(x,fi){return w.fix[fi]}).map(function(x){return x.n});if(f.length)fixL.push("'"+winName(w,i)+"': "+f.join(", "))});
-  if(fixL.length)L.push("권장 수리는 "+fixL.join(" / ")+"입니다.");
+  // 권장 수리: 체크한 원인에서 자동으로
+  var fixL=[];S.wins.forEach(function(w,i){var on=onKeys(w);if(!on.length)return;
+    on.forEach(function(k){var nm=k==="nofp"?"풍지판 없음":CHK.filter(function(c){return c.k===k})[0].n;fixL.push("  · "+(S.wins.length>1?"'"+winName(w,i)+"' ":"")+nm+" → "+CAUSE_FIX[k])})});
+  if(fixL.length){L.push("확인된 원인에 따른 권장 수리는 다음과 같습니다.");L=L.concat(fixL)}
   return{grade:"원인 "+total+"건 확인",color:"#C62828",lines:L};
 }
 function renderAI(){
@@ -559,7 +566,7 @@ document.addEventListener("DOMContentLoaded",function(){
   document.querySelectorAll("[data-env]").forEach(function(el){el.addEventListener(el.type==="checkbox"?"change":"input",function(){S.env[el.dataset.env]=el.type==="checkbox"?el.checked:el.value;if(el.dataset.env!=="rh"&&el.dataset.env!=="tIn"){S.env.src="실외 값 직접 입력";$("#wxSrc").textContent=S.env.src}updateDew();renderAI();save()})});
   $("#c_site").addEventListener("input",function(){updateSteps();save()});
   $("#c_date").addEventListener("input",save);
-  $("#c_req").addEventListener("input",function(){renderAI();save()});
+  $("#c_req").addEventListener("input",function(){renderAI();updateSteps();save()});
   $("#condHead").addEventListener("click",function(){$("#condCard").classList.toggle("closed")});
   $("#aiCard .card-head").addEventListener("click",function(){$("#aiCard").classList.toggle("closed");renderAI()});
   $("#btnAddWin").addEventListener("click",function(){S.wins.push(newWin());renderWins();save();toast("창호를 추가했습니다")});
