@@ -484,7 +484,7 @@ body{padding-bottom:calc(66px + var(--safe-b))}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 4.2</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 4.3</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -589,13 +589,16 @@ var CAUSE_FIX={
  smallh:"창짝 재제작 또는 상·하부 모헤어 보강",
  wide:"잠금(크리센트) 위치 수정·풍지판 교체, 심하면 창짝 재제작",
  sag:"창틀 처짐 수리·호차 높이 조절",
- mohair:"창틀 변형 복원(벤딩)·모헤어 교체",
+ mohair:"모헤어가 짧으면 모헤어 교체, 창짝·창틀 벤딩이 원인이면 변형 복원(벤딩)",
  drain:"청개구리 기류차단 시스템 설치",
  plumb:"창틀 변형 복원(벤딩)",
  prod:"단열 성능이 높은 제품으로 교체 검토",
  ins:"창틀 둘레 단열(사춤) 보수·외부 실리콘 재시공",
  etc:"현장 상태에 맞는 수리 방법 결정",
  nofp:"풍지판 설치"};
+var ONEDAY_GEO=["sag","plumb"]; // 수직·수평(시공 상태) 항목
+function isOneday(w){return w&&w.age===AGES[1]}
+function fixFor(k,w){var f=CAUSE_FIX[k]||"-";if(isOneday(w)&&ONEDAY_GEO.indexOf(k)>=0)f="원데이 시공업체에 보수 요청 우선(다른 업체 수리 시 보증·법적 분쟁 우려) · "+f;return f}
 var DEVS=[{k:"th",n:"열화상 카메라 (FLIR E8)"},{k:"us",n:"초음파 카메라"},{k:"mr",n:"FLIR MR277"}];
 var WDIR=["북","북북동","북동","동북동","동","동남동","남동","남남동","남","남남서","남서","서남서","서","서북서","북서","북북서"];
 
@@ -706,6 +709,12 @@ function report(){
   var many=S.wins.length>1;
   if(ages[AGES[0]])L.push((many?jo("'"+ages[AGES[0]].join("', '")+"'","은","는")+" ":"")+"신축 창호로, 입주 3년 이내라면 공동주택관리법상 창호공사 하자담보책임기간(입주자에게 인도한 날부터 3년) 안에 있어 사업주체(건설사)에 하자보수를 요청할 수 있습니다. 기간 안에 발생한 하자는 기간이 지난 뒤에도 보수 대상이 될 수 있으니 이 소견서와 사진을 보관해 두시기 바랍니다.");
   if(ages[AGES[1]])L.push((many?jo("'"+ages[AGES[1]].join("', '")+"'","은","는")+" ":"")+"원데이 시공으로 교체한 창호로, 공동주택 하자담보 대상이 아니라 시공업체와의 계약·보증에 따라 처리됩니다. 시공업체의 보증 기간과 내용을 먼저 확인하시기 바랍니다.");
+  if(ages[AGES[1]]){
+    L.push("원데이 시공은 기존 발코니 창을 해체한 자리에 창호만 바꿔 다는 방식이라, 개구부와 벽체·설치부는 예전 그대로입니다. 그래서 예전 창 크기에 맞춰 창짝 길이가 길게 제작될 수 있고, 최근 지어지는 아파트의 창호 설치부보다 단열이 떨어질 수밖에 없는 조건입니다. 인테리어 업체가 단열 시공을 하더라도 기존 공간에 맞춰 얇은 단열재를 쓰는 경우가 많아, 창호만 교체해서는 단열 성능을 높이는 데 한계가 있습니다.");
+    var geo=[];S.wins.forEach(function(w,i){if(!isOneday(w))return;ONEDAY_GEO.forEach(function(k){if(w.chk[k]&&w.chk[k].on)geo.push((many?"'"+winName(w,i)+"' ":"")+CHK.filter(function(c){return c.k===k})[0].n)})});
+    if(geo.length)L.push(jo(geo.join(", "),"은","는")+" 창틀 수직·수평과 관련된 시공 상태 항목입니다. 다른 업체가 수직·수평을 수리하면 원데이 시공업체의 보증 책임과 법적 분쟁이 생길 수 있으므로, 먼저 시공업체에 보수를 요청하고 그 결과를 기록해 두시는 것이 안전합니다.");
+  }
+  if(S.wins.some(function(w){return w.chk.mohair&&w.chk.mohair.on}))L.push("모헤어 교체는 모헤어가 짧아 밀착되지 않는 경우에 해당합니다. 창짝이나 창틀이 휘어(벤딩) 모헤어가 붙지 않는 경우에는 모헤어만 바꿔서는 해결되지 않아 변형 복원이 함께 필요합니다.");
   // 구축: 준공 연도별 당시 창호 단열 기준
   var yDone={};S.wins.forEach(function(w,i){if(w.age!==AGES[1]||!w.year||yDone[w.year])return;yDone[w.year]=1;var y=+w.year,st=stdFor(y);if(!st.length)return;
     var names=S.wins.filter(function(x){return x.age===AGES[1]&&String(x.year)===String(w.year)}).map(function(x){return winName(x,S.wins.indexOf(x))});
@@ -725,7 +734,7 @@ function report(){
   if(aggK.length)L.push("여러 창에서 공통으로 확인된 원인은 "+aggK.map(function(k){return k+"("+agg[k]+"곳)"}).join(", ")+"입니다.");
   // 권장 수리: 체크한 원인에서 자동으로
   var fixL=[];S.wins.forEach(function(w,i){var on=onKeys(w);if(!on.length)return;
-    on.forEach(function(k){var nm=k==="nofp"?"풍지판 없음":cLabel(w,CHK.filter(function(c){return c.k===k})[0]);fixL.push("  · "+(S.wins.length>1?"'"+winName(w,i)+"' ":"")+nm+" → "+CAUSE_FIX[k])})});
+    on.forEach(function(k){var nm=k==="nofp"?"풍지판 없음":cLabel(w,CHK.filter(function(c){return c.k===k})[0]);fixL.push("  · "+(S.wins.length>1?"'"+winName(w,i)+"' ":"")+nm+" → "+fixFor(k,w))})});
   if(fixL.length){L.push("확인된 원인에 따른 권장 수리는 다음과 같습니다.");L=L.concat(fixL)}
   return{grade:"원인 "+total+"건 확인",color:"#C62828",lines:L};
 }
@@ -797,7 +806,7 @@ function buildPrint(){
    +S.wins.map(function(w,i){var n=causes.filter(function(x){return x.w===w}).length;return '<tr><td>'+(i+1)+'</td><td>'+esc(winName(w,i))+'</td><td class="l">'+kind(w)+'</td><td>'+(sz(w)?esc(w.fw+"×"+w.fh):"-")+'</td><td>'+(sz(w)?"약 "+sz(w).crack+"m":"-")+'</td><td>'+esc(w.surf||"-")+'</td><td>'+esc(w.fp||"-")+'</td><td>'+(num(w.sill)!==null?esc(w.sill)+"cm":"-")+'</td><td'+(n?' class="red"':'')+'>'+n+'건</td></tr>'}).join("")+'</tbody></table></div>';
   // 5. 확인된 외풍 원인
   H+='<div class="pblock">'+sh("5. 확인된 외풍 원인")+'<table class="tl"><thead><tr><th style="width:40px">번호</th><th style="width:90px">위치</th><th>원인</th><th>권장 수리</th></tr></thead><tbody>'
-   +(causes.length?causes.map(function(x,j){return '<tr><td>'+(j+1)+'</td><td>'+esc(winName(x.w,x.i))+'</td><td class="l red">'+esc(x.n)+(x.memo?'<br><span style="color:#5b6870;font-weight:400;font-size:10.5px">'+esc(x.memo)+'</span>':'')+'</td><td class="l">'+esc(CAUSE_FIX[x.k]||"-")+'</td></tr>'}).join(""):'<tr><td colspan="4">확인된 원인 없음</td></tr>')+'</tbody></table></div>';
+   +(causes.length?causes.map(function(x,j){return '<tr><td>'+(j+1)+'</td><td>'+esc(winName(x.w,x.i))+'</td><td class="l red">'+esc(x.n)+(x.memo?'<br><span style="color:#5b6870;font-weight:400;font-size:10.5px">'+esc(x.memo)+'</span>':'')+'</td><td class="l">'+esc(fixFor(x.k,x.w))+'</td></tr>'}).join(""):'<tr><td colspan="4">확인된 원인 없음</td></tr>')+'</tbody></table></div>';
   // 6. 창호별 상세 (사진 + 표)
   S.wins.forEach(function(w,i){
     var ph=[];if(w.front)ph.push([w.front,"일반 · 전면"]);if(w.close)ph.push([w.close,"일반 · 근접"]);
@@ -809,19 +818,19 @@ function buildPrint(){
     var inst=[];if(w.surf)inst.push("설치면 "+w.surf);if(w.fp)inst.push("풍지판 "+w.fp);if(num(w.sill)!==null)inst.push("창틀과 바닥 높이 "+w.sill+"cm");var zz=sz(w);if(zz)inst.push("창틀 "+zz.txt);
     H+='<div class="pblock'+(i===0?' newpage':'')+'">'+(i===0?sh("6. 창호별 상세"):'')+'<div class="icard'+(phB.length?' top':'')+'" style="'+(phB.length?'':'padding-bottom:10px')+'"><div class="ihead"><div><b>'+(i+1)+'. '+esc(winName(w,i))+'</b><i>'+kind(w)+'</i></div><span>청개구리샤시 · 창호</span></div><table class="ti" style="margin-top:8px">'
       +'<tr><th>확인된 원인</th><td>'+(my.length?my.map(function(x){return '<span class="red">'+esc(x.n)+'</span>'+(x.memo?' — '+esc(x.memo):'')}).join("<br>"):"외풍 원인이 확인되지 않았습니다.")+'</td></tr>'
-      +'<tr><th>권장 수리</th><td>'+(my.length?my.map(function(x){return esc(x.n)+' → '+esc(CAUSE_FIX[x.k]||"-")}).join("<br>"):"-")+'</td></tr>'
+      +'<tr><th>권장 수리</th><td>'+(my.length?my.map(function(x){return esc(x.n)+' → '+esc(fixFor(x.k,x.w))}).join("<br>"):"-")+'</td></tr>'
       +'<tr><th>설치 상태</th><td>'+(inst.length?esc(inst.join(" · ")):"-")+'</td></tr></table></div></div>';
     phB.forEach(function(b,bi){H+='<div class="pblock"><div class="icard '+(bi===phB.length-1?'bot':'mid')+'">'+b+'</div></div>'});
   });
   // 7. 수리 확인표
   H+='<div class="pblock newpage">'+sh("7. 수리 확인표")+'<div style="font-size:11px;color:#5b6870;margin:-4px 0 8px">수리가 끝난 뒤, 항목마다 수리 여부를 확인하고 적는 표입니다.</div><table class="tl"><thead><tr><th style="width:40px">번호</th><th style="width:90px">위치</th><th>원인</th><th>권장 수리</th><th style="width:74px;white-space:nowrap">수리 확인</th><th style="width:72px">확인일</th></tr></thead><tbody>'
-   +(causes.length?causes.map(function(x,j){return '<tr><td>'+(j+1)+'</td><td>'+esc(winName(x.w,x.i))+'</td><td class="l">'+esc(x.n)+'</td><td class="l">'+esc(CAUSE_FIX[x.k]||"-")+'</td><td class="cbx">☐</td><td></td></tr>'}).join(""):'<tr><td colspan="6">-</td></tr>')+'</tbody></table></div>';
+   +(causes.length?causes.map(function(x,j){return '<tr><td>'+(j+1)+'</td><td>'+esc(winName(x.w,x.i))+'</td><td class="l">'+esc(x.n)+'</td><td class="l">'+esc(fixFor(x.k,x.w))+'</td><td class="cbx">☐</td><td></td></tr>'}).join(""):'<tr><td colspan="6">-</td></tr>')+'</tbody></table></div>';
   // 8. 다음 단계 안내
   var hasNew=S.wins.some(function(w){return w.age===AGES[0]}),hasOne=S.wins.some(function(w){return w.age===AGES[1]});
   H+='<div class="pblock">'+sh("8. 다음 단계 안내")+'<table class="ti">'
    +'<tr><th>수리 요청</th><td>이 보고서의 창호별 상세와 사진을 '+(hasNew&&!hasOne?'건설사(사업주체) 하자 접수':hasOne&&!hasNew?'시공업체 보증 접수':'건설사 하자 접수 또는 시공업체 보증 접수')+'에 그대로 쓰실 수 있습니다.</td></tr>'
    +(hasNew?'<tr><th>신축 창호</th><td>입주 3년 이내라면 창호공사 하자담보책임기간(인도일부터 3년) 안에 있어 하자보수를 요청할 수 있습니다. 이 보고서와 사진을 보관해 두시기 바랍니다.</td></tr>':'')
-   +(hasOne?'<tr><th>원데이 교체 창호</th><td>공동주택 하자담보 대상이 아니라 시공업체와의 계약·보증에 따라 처리됩니다. 보증 기간과 내용을 먼저 확인하시기 바랍니다.</td></tr>':'')
+   +(hasOne?'<tr><th>원데이 교체 창호</th><td>공동주택 하자담보 대상이 아니라 시공업체와의 계약·보증에 따라 처리됩니다. 보증 기간과 내용을 먼저 확인하시기 바랍니다.'+(S.wins.some(function(w){return isOneday(w)&&ONEDAY_GEO.some(function(k){return w.chk[k]&&w.chk[k].on})})?' 창틀 수직·수평 관련 항목은 다른 업체에 맡기기 전에 시공업체에 먼저 보수를 요청하시기 바랍니다(보증·법적 분쟁 예방).':'')+'</td></tr>':'')
    +'<tr><th>수리 확인</th><td>수리가 끝나면 위 수리 확인표로 항목마다 다시 확인하시기 바랍니다. 재점검이 필요하시면 연락 주십시오.</td></tr>'
    +'<tr><th>다시 확인할 때</th><td>외풍은 바람이 세고 실내외 온도차가 큰 날 더 크게 나타납니다. 그런 날 다시 확인하시기를 권합니다.</td></tr>'
    +'<tr><th>문의</th><td>청개구리샤시 · 전화 010-2322-0949</td></tr></table></div>';
@@ -832,7 +841,7 @@ function buildPrint(){
    +'<li>실외 온도와 바람은 점검 위치의 기상 자료(지상 10m 기준) 또는 현장 입력값이며, 실내 이슬점은 실내 온도·습도로 계산했습니다.</li>'
    +(usedStd?'<li>창호 단열 기준은 법제처 「건축물의 설비기준 등에 관한 규칙」과 「건축물의 에너지절약설계기준」 연혁을 참고했으며, 실제 적용 기준은 허가 신청 시점에 따라 달라질 수 있습니다.</li>':'')
    +'<li>'+esc(CFG.NOTICE)+'</li>'
-   +'<li>점검한 뒤에 생긴 손상과, 가려져 있어 볼 수 없었던 부분은 이 보고서에 담기지 않았습니다.</li></ul>'
+   +(hasOne?'<li>원데이 시공은 기존 발코니 창을 해체한 자리에 창호만 교체하는 구조로, 예전 창 크기에 맞춰 창짝 길이가 길어질 수 있고 최근 아파트 창호 설치부보다 단열이 떨어질 수 있는 조건을 감안해 판단했습니다. 인테리어 단열 시공이 있더라도 얇은 단열재가 쓰이는 경우가 많고, 창호 교체만으로 단열을 높이는 데는 한계가 있습니다.</li>':'')+'<li>모헤어 교체는 모헤어가 짧은 경우로 한정해 권하며, 창틀 수직·수평 수리는 원데이 시공업체 보증과의 관계를 감안해 시공업체 요청을 우선으로 안내했습니다.</li>'+'<li>점검한 뒤에 생긴 손상과, 가려져 있어 볼 수 없었던 부분은 이 보고서에 담기지 않았습니다.</li></ul>'
    +'<div class="endnote">※ 본 보고서는 창호 외풍 점검 참고 자료이며 법적 효력이 없습니다. · 보고서 번호 '+repNo+'</div></div>';
   var area=$("#print-area");area.className="rp";area.innerHTML=H;
 }
