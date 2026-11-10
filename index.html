@@ -186,7 +186,12 @@ footer .ph{color:var(--brand-700);font-weight:800}
 .req-inp{display:block;height:auto;min-height:74px;padding:18px 10px 7px;font-size:13.5px;line-height:1.5;resize:vertical;font-family:inherit}
 .req-inp::placeholder{font-size:12px;color:#A9B4AD}
 .wx-src{font-size:10.5px;color:var(--ink-3);margin-top:5px;text-align:center}
-.typesel{flex:0 0 auto;font-size:12px;font-weight:700;padding:5px 6px;border:1.5px solid var(--line);border-radius:9px;background:#fff;color:var(--ink-2)}
+.typesel{flex:0 0 auto;font-size:12.5px;font-weight:700;padding:5px 6px;border:1.5px solid var(--line);border-radius:9px;background:#fff;color:var(--ink-2)}
+.locsel{flex:1 1 0;min-width:0;font-size:13.5px;font-weight:780;color:var(--ink)}
+.locsel.empty{color:var(--ink-3);border-color:#E9A3A3}
+.kindsel{flex:1.25 1 0;min-width:0}
+.locsel{flex:.9 1 0}
+.etc-inp{flex:.8 1 0;min-width:0;font-size:13px;font-weight:700;padding:5px 7px;border:1.5px solid var(--line);border-radius:9px;background:#fff;font-family:inherit}
 .part{border:1px solid var(--line);border-radius:12px;padding:6px 9px;margin-top:5px;background:#fff}
 .part.lv2{border-color:#EBC77A;background:#FFFBF1}
 .part.lv3{border-color:#E9A3A3;background:#FFF6F6}
@@ -251,7 +256,7 @@ table.r-res td.l{text-align:left}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 외풍 점검</h1><span class="ver" id="verBadge">V 1.8</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호 외풍 점검</h1><span class="ver" id="verBadge">V 1.9</span></div>
   <nav class="modetabs"><a href="noise.html">차음 수리 전·후</a><a href="./" class="on">외풍 점검</a></nav>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
@@ -327,6 +332,7 @@ var CHK=[
  {k:"prod",n:"단열 취약 제품",d:"제품 자체 단열 성능이 낮음"},
  {k:"ins",n:"창틀 주위 단열 시공 부족·없음",d:"창 둘레 벽이 차가워짐"}];
 var WTYPES=["미서기 이중창","미서기 단창","분합창","여닫이·틸트","고정창","기타"];
+var ROOMS=["거실","안방","침실1","침실2","침실3","발코니","다용도","주방","실외기실","대피공간","기타"];
 var FIX=[
  {n:"청개구리 기류차단 시스템",c:["drain","wide"]},
  {n:"풍지판 교체",c:["wide","nofp"]},
@@ -361,7 +367,7 @@ function getWin(id){return S.wins.filter(function(w){return w.id===id})[0]}
 function getChk(w,k){if(!w.chk[k])w.chk[k]={on:false,memo:"",photo:null};return w.chk[k]}
 function isDouble(w){return /이중창/.test(w.type)}
 function jo(w,a,b){var c=String(w).replace(/[)\]\s]+$/,"").slice(-1),code=c.charCodeAt(0);var has=(code>=0xAC00&&code<=0xD7A3)?((code-0xAC00)%28>0):/[0-9]/.test(c)?/[136780]/.test(c):false;return w+(has?a:b)}
-function winName(w,i){return w.name||("창호 "+(i+1))}
+function winName(w,i){if(w.name==="기타")return w.nameEtc||"기타";return w.name||("창호 "+(i+1))}
 
 // 이슬점(Magnus 식)
 function dewPoint(){var t=num(S.env.tIn),rh=num(S.env.rh);if(t===null||rh===null||rh<=0||rh>100)return null;var a=17.62,b=243.12,g=Math.log(rh/100)+a*t/(b+t);return r1(b*g/(a-g))}
@@ -380,8 +386,9 @@ function renderWins(){
   $("#winList").innerHTML=S.wins.map(function(w,i){
     var sug=suggestedFix(w);
     return '<div class="loc"><div class="loc-head"><span class="loc-no">'+(i+1)+'</span>'
-      +'<input class="name-inp" value="'+esc(w.name)+'" placeholder="위치명 (예: 거실 큰창)" data-wf="name" data-w="'+w.id+'">'
-      +'<select class="typesel" data-wf="type" data-w="'+w.id+'">'+WTYPES.map(function(t){return '<option'+(t===w.type?' selected':'')+'>'+t+'</option>'}).join("")+'</select>'
+      +'<select class="typesel locsel'+(w.name?'':' empty')+'" data-wf="name" data-w="'+w.id+'"><option value=""'+(w.name?'':' selected')+' disabled>위치 선택</option>'+ROOMS.map(function(t){return '<option'+(t===w.name?' selected':'')+'>'+t+'</option>'}).join("")+'</select>'
+      +(w.name==="기타"?'<input class="etc-inp" value="'+esc(w.nameEtc||"")+'" placeholder="위치 직접 입력" data-wf="nameEtc" data-w="'+w.id+'">':'')
+      +'<select class="typesel kindsel" data-wf="type" data-w="'+w.id+'">'+WTYPES.map(function(t){return '<option'+(t===w.type?' selected':'')+'>'+t+'</option>'}).join("")+'</select>'
       +(S.wins.length>1?'<button class="del-btn" data-act="delwin" data-w="'+w.id+'" aria-label="창호 삭제">✕</button>':'')
       +'</div><div class="loc-pad">'
       +'<div class="seg-label before" style="margin-top:0"><span class="stepno">2</span>창호 사진<span class="sizebox">가로<input class="db" inputmode="numeric" placeholder="mm" value="'+esc(w.fw)+'" data-wf="fw" data-w="'+w.id+'">×세로<input class="db" inputmode="numeric" placeholder="mm" value="'+esc(w.fh)+'" data-wf="fh" data-w="'+w.id+'">mm</span></div>'
@@ -463,10 +470,10 @@ function renderAI(){
 }
 
 // ── 저장 (사진 제외)
-function save(){try{localStorage.setItem(CFG.STORAGE_KEY,JSON.stringify({site:$("#c_site").value,date:$("#c_date").value,req:$("#c_req").value,env:S.env,wins:S.wins.map(function(w){var c={};Object.keys(w.chk).forEach(function(k){c[k]={on:!!w.chk[k].on,memo:w.chk[k].memo||""}});return{id:w.id,name:w.name,type:w.type,note:w.note,surf:w.surf,fp:w.fp,sill:w.sill,fw:w.fw,fh:w.fh,chk:c,fix:w.fix}})}))}catch(e){}}
+function save(){try{localStorage.setItem(CFG.STORAGE_KEY,JSON.stringify({site:$("#c_site").value,date:$("#c_date").value,req:$("#c_req").value,env:S.env,wins:S.wins.map(function(w){var c={};Object.keys(w.chk).forEach(function(k){c[k]={on:!!w.chk[k].on,memo:w.chk[k].memo||""}});return{id:w.id,name:w.name,nameEtc:w.nameEtc||"",type:w.type,note:w.note,surf:w.surf,fp:w.fp,sill:w.sill,fw:w.fw,fh:w.fh,chk:c,fix:w.fix}})}))}catch(e){}}
 function load(){try{var d=JSON.parse(localStorage.getItem(CFG.STORAGE_KEY)||"null");if(!d)return false;$("#c_site").value=d.site||"";$("#c_date").value=d.date||"";$("#c_req").value=d.req||"";
   if(d.env)Object.keys(S.env).forEach(function(k){if(d.env[k]!==undefined)S.env[k]=d.env[k]});
-  S.wins=(d.wins||[]).map(function(w){var n=newWin();n.id=w.id||n.id;n.name=w.name||"";n.type=w.type||n.type;n.note=w.note||"";n.surf=w.surf||"";n.fp=w.fp||"";n.sill=w.sill||"";n.fw=w.fw||"";n.fh=w.fh||"";n.fix=Array.isArray(w.fix)?w.fix:[];
+  S.wins=(d.wins||[]).map(function(w){var n=newWin();n.id=w.id||n.id;n.name=w.name||"";n.nameEtc=w.nameEtc||"";if(n.name&&ROOMS.indexOf(n.name)<0){n.nameEtc=n.name;n.name="기타"}n.type=w.type||n.type;n.note=w.note||"";n.surf=w.surf||"";n.fp=w.fp||"";n.sill=w.sill||"";n.fw=w.fw||"";n.fh=w.fh||"";n.fix=Array.isArray(w.fix)?w.fix:[];
     Object.keys(w.chk||{}).forEach(function(k){var y=getChk(n,k);y.on=!!w.chk[k].on;y.memo=w.chk[k].memo||""});return n});
   return S.wins.length>0}catch(e){return false}}
 function syncEnvInputs(){document.querySelectorAll("[data-env]").forEach(function(el){var k=el.dataset.env;if(el.type==="checkbox")el.checked=!!S.env[k];else el.value=S.env[k]||""});$("#wxSrc").textContent=S.env.src||"";updateDew()}
@@ -544,6 +551,7 @@ document.addEventListener("DOMContentLoaded",function(){
     else return;renderAI();updateSteps();save()});
   list.addEventListener("change",function(ev){var t=ev.target,w=getWin(t.dataset.w);if(!w)return;
     if(t.dataset.wf==="type"){w.type=t.value;renderWins()}
+    else if(t.dataset.wf==="name"&&t.tagName==="SELECT"){w.name=t.value;renderWins();if(w.name==="기타"){var ei=document.querySelector('.etc-inp[data-w="'+w.id+'"]');if(ei)ei.focus()}}
     else if(t.dataset.fix!==undefined){w.fix[+t.dataset.fix]=t.checked;renderWins()}
     else if(t.dataset.file){var f=t.files[0];if(!f)return;readPhoto(f,function(url){setPhoto(w,t.dataset.file,url);renderWins()});return}
     else return;renderAI();save()});
