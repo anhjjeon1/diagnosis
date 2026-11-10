@@ -283,7 +283,7 @@ table.r-res td.l{text-align:left}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 2.8</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 2.9</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -344,7 +344,8 @@ COMPANY:"청개구리샤시 · 010-2322-0949 · frogsash.co.kr",
 NOTICE:"본 점검은 외풍이 들어오는 자리를 현장에서 찾기 위한 정성 점검이며, 법적 기밀성 등급(KS F 2292 통기량)과는 다른 지표입니다. 외풍 세기는 그날의 바람과 실내외 온도차에 따라 달라집니다."};
 // 원데이 시공 등 외풍 원인 체크 항목
 var CHK=[
- {k:"small",n:"창짝 크기 작게 제작",d:"창틀에 비해 창짝 가로·세로가 작음"},
+ {k:"small",n:"창짝 가로 작게 제작",d:"창틀에 비해 창짝 가로가 작음"},
+ {k:"smallh",n:"창짝 세로 작게 제작",d:"창틀에 비해 창짝 세로가 작음"},
  {k:"wide",n:"창짝 가로 길게 제작",d:"여밈대 기밀 부족"},
  {k:"sag",n:"창틀 하부 처짐·상부 올라감",d:"창틀 변형으로 틈 발생"},
  {k:"mohair",n:"모헤어 밀착 불량",d:"창짝·창틀 벤딩으로 모헤어가 붙지 않음"},
@@ -387,6 +388,7 @@ var FIX=[
  {n:"창틀 변형 복원(벤딩)",c:["plumb","mohair"]}];
 var CAUSE_FIX={
  small:"창짝 재제작 또는 마구리판 모헤어 보강",
+ smallh:"창짝 재제작 또는 상·하부 모헤어 보강",
  wide:"잠금(크리센트) 위치 수정·풍지판 교체, 심하면 창짝 재제작",
  sag:"창틀 처짐 수리·호차 높이 조절",
  mohair:"창틀 변형 복원(벤딩)·모헤어 교체",
