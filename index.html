@@ -473,18 +473,13 @@ body{padding-bottom:calc(92px + var(--safe-b))}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 3.8</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 3.9</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
 <div id="app" class="wrap">
-  <section class="card collapsible" id="condCard">
-    <div class="card-head" id="condHead">
-      <div class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></div>
-      <div><h2>현장 정보 · 점검 조건</h2></div>
-      <span class="chev">▼</span>
-    </div>
-    <div class="card-body">
+  <section class="card" id="condCard">
+    <div class="card-body" style="padding-top:10px">
       <div class="row2" style="grid-template-columns:1fr 106px;gap:7px">
         <div class="field"><label><span class="stepno">1</span>현장 / 고객명</label><div class="micwrap"><input class="inp" id="c_site" placeholder="예 : 아파트명 101동 101호"><button type="button" class="mic" aria-label="음성 입력"></button></div></div>
         <div class="field"><label>점검일자</label><input class="inp" id="c_date" type="date"></div>
@@ -890,7 +885,6 @@ document.addEventListener("DOMContentLoaded",function(){
   $("#c_site").addEventListener("input",function(){updateSteps();save()});
   $("#c_date").addEventListener("input",save);
   $("#c_req").addEventListener("input",function(){renderAI();updateSteps();save()});
-  $("#condHead").addEventListener("click",function(){$("#condCard").classList.toggle("closed")});
   $("#btnAddWin").addEventListener("click",function(){S.wins.push(newWin());renderWins();save();toast("창호를 추가했습니다")});
   $("#goAi").addEventListener("click",function(){renderAI();var el=$("#aiCard");el.classList.remove("hide");el.scrollIntoView({behavior:"smooth",block:"start"});el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")});
   $("#btnSave").addEventListener("click",savePDF);
