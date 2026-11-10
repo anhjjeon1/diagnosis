@@ -240,13 +240,13 @@ footer .ph{color:var(--brand-700);font-weight:800}
 .rp .cbx{font-size:15px;color:#6b7780}
 .rp .icard{border:1px solid #cfdad5;border-top:3px solid #0F6B52;padding:0 10px}
 .rp .icard.mid{border-top:none;border-bottom:none}
-.rp .icard.top{border-bottom:none}.rp .icard.bot{border-top:none;padding-bottom:10px}
+.rp .icard.top{border-bottom:none}.rp .icard.bot{border-top:none;padding-bottom:10px}.rp .icard.mid .iph,.rp .icard.bot .iph{padding-top:6px}
 .rp .ihead{display:flex;justify-content:space-between;align-items:baseline;padding:11px 2px 9px;border-bottom:1px solid #e3e9e6}
 .rp .ihead b{font-size:14px;color:#0F4F3E}.rp .ihead i{font-style:normal;font-size:11.5px;color:#0F6B52;margin-left:6px}
 .rp .ihead span{font-size:10.5px;color:#8A9399}
 .rp .iph{display:flex;gap:10px;justify-content:center;padding:10px 0 4px}
 .rp .iph div{width:300px}
-.rp .iph img{width:300px;height:225px;object-fit:contain;background:#f3f5f4;display:block}
+.rp .iph img{width:300px;height:205px;object-fit:contain;background:#f3f5f4;display:block}
 .rp .iph .cap{font-size:10.5px;color:#8A9399;text-align:center;margin-top:4px}
 .rp ul.bl{margin:0;padding-left:4px;list-style:none;font-size:11.5px;line-height:1.9;color:#33424c}
 .rp ul.bl li:before{content:"· "}
@@ -484,7 +484,7 @@ body{padding-bottom:calc(66px + var(--safe-b))}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 4.1</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 4.2</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -804,13 +804,14 @@ function buildPrint(){
     DEVS.forEach(function(d){if(w.ph[d.k+"F"])ph.push([w.ph[d.k+"F"],d.n+" · 전면"]);if(w.ph[d.k+"C"])ph.push([w.ph[d.k+"C"],d.n+" · 근접"])});
     CHK.forEach(function(c){var x=w.chk[c.k];if(x&&x.photo)ph.push([x.photo,cLabel(w,c)+(x.on?"":" (참고)")])});
     var my=causes.filter(function(x){return x.w===w});
-    H+='<div class="pblock'+(i===0?' newpage':'')+'">'+(i===0?sh("6. 창호별 상세"):'')+'<div class="icard top"><div class="ihead"><div><b>'+(i+1)+'. '+esc(winName(w,i))+'</b><i>'+kind(w)+'</i></div><span>청개구리샤시 · 창호</span></div></div></div>';
-    for(var j=0;j<ph.length;j+=2){H+='<div class="pblock"><div class="icard mid"><div class="iph">'+[ph[j],ph[j+1]].filter(Boolean).map(function(it){return '<div><img src="'+it[0]+'"><div class="cap">'+esc(it[1])+'</div></div>'}).join("")+'</div></div></div>'}
+    // 제목 + 표를 한 덩어리로(표가 혼자 다음 쪽으로 넘어가지 않게), 사진은 그 아래
+    var phB=[];for(var j=0;j<ph.length;j+=2){phB.push('<div class="iph">'+[ph[j],ph[j+1]].filter(Boolean).map(function(it){return '<div><img src="'+it[0]+'"><div class="cap">'+esc(it[1])+'</div></div>'}).join("")+'</div>')}
     var inst=[];if(w.surf)inst.push("설치면 "+w.surf);if(w.fp)inst.push("풍지판 "+w.fp);if(num(w.sill)!==null)inst.push("창틀과 바닥 높이 "+w.sill+"cm");var zz=sz(w);if(zz)inst.push("창틀 "+zz.txt);
-    H+='<div class="pblock"><div class="icard bot"><table class="ti" style="margin-top:8px">'
+    H+='<div class="pblock'+(i===0?' newpage':'')+'">'+(i===0?sh("6. 창호별 상세"):'')+'<div class="icard'+(phB.length?' top':'')+'" style="'+(phB.length?'':'padding-bottom:10px')+'"><div class="ihead"><div><b>'+(i+1)+'. '+esc(winName(w,i))+'</b><i>'+kind(w)+'</i></div><span>청개구리샤시 · 창호</span></div><table class="ti" style="margin-top:8px">'
       +'<tr><th>확인된 원인</th><td>'+(my.length?my.map(function(x){return '<span class="red">'+esc(x.n)+'</span>'+(x.memo?' — '+esc(x.memo):'')}).join("<br>"):"외풍 원인이 확인되지 않았습니다.")+'</td></tr>'
       +'<tr><th>권장 수리</th><td>'+(my.length?my.map(function(x){return esc(x.n)+' → '+esc(CAUSE_FIX[x.k]||"-")}).join("<br>"):"-")+'</td></tr>'
       +'<tr><th>설치 상태</th><td>'+(inst.length?esc(inst.join(" · ")):"-")+'</td></tr></table></div></div>';
+    phB.forEach(function(b,bi){H+='<div class="pblock"><div class="icard '+(bi===phB.length-1?'bot':'mid')+'">'+b+'</div></div>'});
   });
   // 7. 수리 확인표
   H+='<div class="pblock newpage">'+sh("7. 수리 확인표")+'<div style="font-size:11px;color:#5b6870;margin:-4px 0 8px">수리가 끝난 뒤, 항목마다 수리 여부를 확인하고 적는 표입니다.</div><table class="tl"><thead><tr><th style="width:40px">번호</th><th style="width:90px">위치</th><th>원인</th><th>권장 수리</th><th style="width:74px;white-space:nowrap">수리 확인</th><th style="width:72px">확인일</th></tr></thead><tbody>'
