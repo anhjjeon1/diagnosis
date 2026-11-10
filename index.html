@@ -246,6 +246,8 @@ footer .ph{color:var(--brand-700);font-weight:800}
 .ck-photo .photo-thumb,.ck-photo .photo-thumb img{height:100%;max-height:none}
 .ck-photo .photo-del{width:20px;height:20px;top:2px;right:2px;font-size:11px;border-radius:5px}
 .ck .memo-inp{margin-top:4px}
+.ck-big{position:relative;margin-top:6px;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--line);background:#f4f6f5}
+.ck-big img{display:block;width:100%;max-height:300px;object-fit:contain}
 .ck-free .ck-box{flex:0 0 auto}
 .ck-free .etc-cause{flex:1;min-width:0;margin:0;background:#fff}
 .micwrap{display:flex;gap:5px;align-items:center}
@@ -292,7 +294,7 @@ table.r-res td.l{text-align:left}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 3.1</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 3.2</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -363,6 +365,8 @@ var CHK=[
  {k:"prod",n:"단열 취약 제품",d:"제품 자체 단열 성능이 낮음"},
  {k:"ins",n:"창틀 주위 단열 시공 부족",d:"창 둘레 벽이 차가워짐"},
  {k:"etc",n:"기타",d:"",free:true}];
+// 항목 사진은 항목 아래에 크게 (📷 버튼으로 다시 찍으면 교체, ✕로 삭제)
+function bigPhoto(url,c,w){if(!url)return "";return '<div class="ck-big"><img src="'+url+'" alt="'+esc(c.n)+' 사진"><span class="photo-cap">'+esc(c.n)+'</span><button class="photo-del" data-act="delphoto" data-slot="c:'+c.k+'" data-w="'+w.id+'" aria-label="사진 삭제">✕</button></div>'}
 function cLabel(w,c){if(!c.free)return c.n;var m=((w.chk[c.k]||{}).memo||"").trim();return m?"기타("+m+")":"기타"}
 var WTYPES=["미서기 이중창","미서기 단창","분합창","여닫이·틸트","고정창","기타"];
 var SILLS=[];for(var _s=0;_s<=150;_s+=10)SILLS.push(_s);
@@ -468,9 +472,10 @@ function renderWins(){
       +CHK.map(function(c){var x=w.chk[c.k]||{};
         if(c.free)return '<div class="ck ck-free'+(x.on?' on':'')+'"><div class="ck-top"><button class="ck-box" data-act="chk" data-w="'+w.id+'" data-k="'+c.k+'"><span class="ck-mark">'+(x.on?'✓':'')+'</span><span class="ck-txt">'+c.n+'</span></button>'
           +'<input class="memo-inp etc-cause" placeholder="그 밖의 원인 직접 입력" data-cf="memo" data-w="'+w.id+'" data-k="'+c.k+'" value="'+esc(x.memo||"")+'"><button type="button" class="mic" aria-label="음성 입력"></button>'
-          +'<div class="ck-photo"><div class="photo-slot">'+photoHtml(x.photo,"","c:"+c.k,w.id,"")+'</div></div></div></div>';
+          +'<div class="ck-photo"><div class="photo-slot">'+photoHtml(null,"","c:"+c.k,w.id,"")+'</div></div></div>'+bigPhoto(x.photo,c,w)+'</div>';
         return '<div class="ck'+(x.on?' on':'')+'"><div class="ck-top"><button class="ck-box" data-act="chk" data-w="'+w.id+'" data-k="'+c.k+'"><span class="ck-mark">'+(x.on?'✓':'')+'</span><span class="ck-txt">'+c.n+'<small>'+c.d+'</small></span></button>'
-          +'<div class="ck-photo"><div class="photo-slot">'+photoHtml(x.photo,"","c:"+c.k,w.id,"")+'</div></div></div>'
+          +'<div class="ck-photo"><div class="photo-slot">'+photoHtml(null,"","c:"+c.k,w.id,"")+'</div></div></div>'
+          +bigPhoto(x.photo,c,w)
           +(x.on?'<input class="memo-inp" placeholder="메모 (위치·정도 등)" data-cf="memo" data-w="'+w.id+'" data-k="'+c.k+'" value="'+esc(x.memo||"")+'">':'')
           +'</div>';
       }).join("")
