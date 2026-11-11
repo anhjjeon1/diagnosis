@@ -498,7 +498,7 @@ body{padding-bottom:calc(66px + var(--safe-b))}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 5.4</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 5.5</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -639,7 +639,7 @@ function stackP(){var f=num(S.env.floor),n=num(S.env.floors),to=num(S.env.tOut),
 function windP(){var v=num(S.env.wind);return v===null?null:r1(0.5*1.2*v*v)}
 var WDIR=["북","북북동","북동","동북동","동","동남동","남동","남남동","남","남남서","남서","서남서","서","서북서","북서","북북서"];
 
-var S={env:{tOut:"",wind:"",wdir:"",tIn:"",rh:"",fan:false,src:"",floor:"",floors:"",ldir:""},wins:[]},aiOpenOnce=false;
+var S={env:{tOut:"",wind:"",wdir:"",tIn:"",rh:"",fan:false,src:"",floor:"",floors:"",ldir:"",lat:"",lon:"",locName:"",locSrc:""},wins:[]},aiOpenOnce=false;
 
 function $(s){return document.querySelector(s)}
 function num(v){var n=parseFloat(v);return isNaN(n)?null:n}
@@ -717,6 +717,33 @@ function updateDew(){var dp=dewPoint();$("#dewOut").value=dp===null?"":dp}
 
 // ── 진단 의견 (규칙 기반, 입력값만 사용)
 function winChecked(w){return !!(w.name||w.front||w.close||num(w.thMin)!==null||(w.usPos||"").trim()||w.dgOn||Object.keys(w.ph||{}).some(function(k){return w.ph[k]}))}
+// ── 지역 겨울 날씨(최근 3겨울 12~2월, Open-Meteo 과거 자료) → 창별 바깥→실내(실내 음압) / 실내→바깥(실내 양압) 시간 비율
+var CLIM=null,climBusy=false,climTried="";
+var CP_T=[[0,0.7],[45,0.35],[90,-0.6],[135,-0.5],[180,-0.3]]; // 고층 벽면 풍압계수 일반값(ASHRAE Fundamentals 범위)을 단순화한 참고값
+var WIND_A=0.22; // 창 높이 풍속 보정 지수(교외 지형)
+function cpAt(d){for(var i=1;i<CP_T.length;i++){if(d<=CP_T[i][0]){var a=CP_T[i-1],b=CP_T[i];return a[1]+(b[1]-a[1])*(d-a[0])/(b[0]-a[0])}}return CP_T[CP_T.length-1][1]}
+function climRange(){var t=new Date(),y=t.getFullYear();if(t.getMonth()<2)y--;return{s:(y-3)+"-12-01",e:y+"-02-"+new Date(y,2,0).getDate()}}
+function siteCity(){var m=($("#c_site").value||"").match(/([가-힣]{1,6}?)(특별자치시|특별시|광역시|시|군)(?=\s|$)/);return m?m[1]:""}
+function climKey(){if(S.env.locSrc==="site"&&siteCity()&&siteCity()!==S.env.locName){S.env.lat="";S.env.lon=""}return S.env.lat&&S.env.lon?(+S.env.lat).toFixed(2)+","+(+S.env.lon).toFixed(2):""}
+function needClim(){return !!(num(S.env.floor)&&num(S.env.floors)&&num(S.env.tIn)!==null&&S.wins.some(function(w){return winDir(w)}))}
+function climReady(){var k=climKey();return !!(CLIM&&k&&CLIM.key===k&&CLIM.s===climRange().s&&CLIM.T.length)}
+function loadLoc(){if(climKey())return Promise.resolve(true);var c=siteCity();if(!c)return Promise.resolve(false);
+  return fetch("https://geocoding-api.open-meteo.com/v1/search?name="+encodeURIComponent(c)+"&count=1&language=ko&countryCode=KR").then(function(r){return r.json()}).then(function(d){var g=d&&d.results&&d.results[0];if(!g)return false;S.env.lat=String(Math.round(g.latitude*1000)/1000);S.env.lon=String(Math.round(g.longitude*1000)/1000);S.env.locName=c;S.env.locSrc="site";save();return true}).catch(function(){return false})}
+function loadClim(){var k=climKey(),rg=climRange();if(climReady())return Promise.resolve(true);
+  try{var c=JSON.parse(localStorage.getItem("frogsash_clim_v1")||"null");if(c&&c.key===k&&c.s===rg.s&&c.T&&c.T.length){c.name=S.env.locName||"";CLIM=c;return Promise.resolve(true)}}catch(e){}
+  return fetch("https://archive-api.open-meteo.com/v1/archive?latitude="+S.env.lat+"&longitude="+S.env.lon+"&start_date="+rg.s+"&end_date="+rg.e+"&hourly=temperature_2m,wind_speed_10m,wind_direction_10m&wind_speed_unit=ms&timezone=Asia%2FSeoul").then(function(r){return r.json()}).then(function(d){var h=d&&d.hourly;if(!h||!h.time)return false;var T=[],V=[],W=[];
+    for(var i=0;i<h.time.length;i++){var m=+h.time[i].slice(5,7);if(m!==12&&m!==1&&m!==2)continue;var t=h.temperature_2m[i],v=h.wind_speed_10m[i],w=h.wind_direction_10m[i];if(t===null||v===null||w===null)continue;T.push(Math.round(t*10)/10);V.push(Math.round(v*10)/10);W.push(Math.round(w))}
+    if(!T.length)return false;CLIM={key:k,s:rg.s,e:rg.e,name:S.env.locName||"",T:T,V:V,W:W};try{localStorage.setItem("frogsash_clim_v1",JSON.stringify(CLIM))}catch(e){}return true}).catch(function(){return false})}
+function maybeClim(){if(climBusy||!needClim()||climReady())return;var tk=($("#c_site").value||"")+"|"+climKey();if(climTried===tk)return;climBusy=true;
+  loadLoc().then(function(ok){return ok?loadClim():false}).then(function(ok){climBusy=false;if(ok)renderAI();else climTried=($("#c_site").value||"")+"|"+climKey()})}
+function climSum(){if(!climReady())return null;var n=CLIM.T.length,st=0,sv=0,c=[0,0,0,0,0,0,0,0];for(var i=0;i<n;i++){st+=CLIM.T[i];sv+=CLIM.V[i];if(CLIM.V[i]>=0.5)c[Math.round((CLIM.W[i]%360)/45)%8]++}
+  var top=c.map(function(x,j){return{d:DIR8[j],p:Math.round(x/n*1000)/10}}).sort(function(a,b){return b.p-a.p}).slice(0,3);
+  return{n:n,t:r1(st/n),v:r1(sv/n),top:top,s:CLIM.s,e:CLIM.e,name:S.env.locName||CLIM.name||""}}
+function climWin(w){if(!climReady())return null;var a=dirAngle(winDir(w)),f=num(S.env.floor),nf=num(S.env.floors),ti=num(S.env.tIn);if(a===null||!f||!nf||f>nf||ti===null)return null;
+  var z=(f-0.5)*STORY_H,h=(f-0.5-nf/2)*STORY_H,kv=Math.pow(Math.max(z,10)/10,2*WIND_A),iw=0,is=0,n=CLIM.T.length;
+  for(var i=0;i<n;i++){var d=Math.abs(((CLIM.W[i]-a)%360+540)%360-180),pw=cpAt(d)*0.6*CLIM.V[i]*CLIM.V[i]*kv,ps=3460*h*(1/(CLIM.T[i]+273.15)-1/(ti+273.15));if(pw>0)iw++;if(pw-ps>0)is++}
+  var w0=Math.round(iw/n*100),s0=Math.round(is/n*100);return{wind:w0,stack:s0,lo:Math.min(w0,s0),hi:Math.max(w0,s0),up:h>0,n:n}}
+function climPeriod(cs){return cs.s.slice(0,7).replace("-",".")+"~"+cs.e.slice(0,7).replace("-",".")}
 function report(){
   var e=S.env,L=[],total=0;
   var tO=num(e.tOut),tI=num(e.tIn),wd=num(e.wind);
@@ -797,6 +824,12 @@ function report(){
   var sp=stackP(),wp=windP();if(sp){var fl=S.env.floor,fs=S.env.floors;
     if(!sp.pos)L.push("이 세대는 "+fs+"층 건물의 "+fl+"층으로 건물 중간보다 아래쪽입니다. 겨울에는 굴뚝효과로 아래층일수록 바깥 공기가 창틈으로 빨려 들어오는 쪽이 되어 외풍이 커집니다. 점검 당시 실내외 온도 기준 이 층에 걸리는 굴뚝효과 압력은 약 "+Math.abs(sp.dp)+"Pa(바깥→실내 방향)로 추정됩니다"+(wp!==null?"(같은 시각 바람의 압력은 약 "+wp+"Pa)":"")+".");
     else L.push("이 세대는 "+fs+"층 건물의 "+fl+"층으로 건물 중간보다 위쪽입니다. 겨울에는 굴뚝효과로 위층일수록 실내 공기가 창틈으로 빠져나가는 쪽이 되어, 외풍보다 실내 습기가 외창 쪽으로 새어 나가 외창 안쪽 면에 결로가 생기기 쉽습니다. 점검 당시 실내외 온도 기준 이 층에 걸리는 굴뚝효과 압력은 약 "+Math.abs(sp.dp)+"Pa(실내→바깥 방향)로 추정되며"+(wp!==null?", 바람의 압력(약 "+wp+"Pa)이 이보다 크면 바람 받는 창에서는 외풍이 들어올 수 있습니다":"")+". 이 경우 내창 기밀을 함께 보강하는 것이 중요합니다.")}
+  var cs=climSum();if(cs){L.push("최근 3겨울("+climPeriod(cs)+", 12~2월 "+cs.n.toLocaleString()+"시간) "+(cs.name?cs.name+" 지역":"점검 지역")+" 날씨는 평균 기온 "+cs.t+"℃, 평균 바람 "+cs.v+"m/s이고, 바람은 "+cs.top.map(function(x){return x.d+"풍 "+x.p+"%"}).join(", ")+" 순으로 많이 불었습니다.");
+    S.wins.forEach(function(w,i){var c=climWin(w);if(!c)return;var s="'"+winName(w,i)+"' "+winDir(w)+"향 창에 바깥 공기가 밀려 들어오는 조건(실내 음압)은 겨울 시간의 약 "+c.lo+"~"+c.hi+"%이고(바람만 따지면 "+c.wind+"%, 굴뚝효과를 건물 높이만큼 모두 받는다고 보면 "+c.stack+"%), 나머지 시간은 실내 공기가 빠져나가는 조건(실내 양압)입니다.";
+      if(c.lo>=60)s+=" 겨울 대부분 바깥 공기가 들어오는 쪽이라, 외풍을 늘 느끼기 쉬운 창입니다.";
+      else if(c.hi<20)s+=" 평소에는 실내 공기가 빠져나가는 창이라 외풍은 바람이 센 날 위주로 느껴지고, 실내 습기가 외창 쪽으로 새어 나가 외창 안쪽 면에 결로가 생기기 쉬운 쪽입니다.";
+      else s+=" 바람 방향·세기와 굴뚝효과의 크기에 따라 외풍이 들어오기도 하고 실내 공기가 빠져나가기도 하는 창입니다. "+(c.up?"위층이라 굴뚝효과가 크게 걸릴수록 빠져나가는 시간이 늘고, 그때 실내 습기가 외창 쪽으로 나가 외창 안쪽 면 결로로 이어지기 쉽습니다.":"아래층이라 굴뚝효과가 크게 걸릴수록 외풍이 들어오는 시간이 늘어납니다.")+(c.wind>=20?" 바람이 이 창 쪽에서 불어오는 날에는 외풍을 느끼기 쉽습니다.":"");
+      L.push(s)})}
   var sized=S.wins.map(function(w,i){return{n:winName(w,i),z:sz(w)}}).filter(function(x){return x.z});
   if(sized.length){
     var szL="틈으로 들어오는 바람의 양은 틈 길이에 비례해 늘어나므로, 큰 창일수록 같은 원인이라도 외풍을 더 크게 느낄 수 있습니다.";
@@ -812,7 +845,7 @@ function report(){
   if(fixL.length){L.push("확인된 원인에 따른 권장 수리는 다음과 같습니다.");L=L.concat(fixL)}
   return{grade:total?"원인 "+total+"건 확인":"특이사항 없음",color:total?"#C62828":"#2E7D32",lines:L};
 }
-function renderAI(){
+function renderAI(){maybeClim();
   var r=report(),box=$("#aiReport");
   if(!r){box.innerHTML='<div class="ai empty">창호 위치를 고르거나 부위별 외풍 점검 항목을 체크하면 진단 의견이 표시됩니다.</div>';return}
   box.innerHTML='<div class="ai"><div class="hl">✨ 진단 의견<span class="grade" style="background:'+r.color+'">'+r.grade+'</span></div><ul>'+r.lines.map(function(s){var sub=/^\s+·\s/.test(s);return '<li'+(sub?' style="list-style:none;margin-left:-2px"':'')+'>'+esc(s.replace(/^\s+·\s/,"└ "))+'</li>'}).join("")+'</ul></div>';
@@ -835,7 +868,7 @@ function fetchWeather(){
   navigator.geolocation.getCurrentPosition(function(pos){
     var u="https://api.open-meteo.com/v1/forecast?latitude="+pos.coords.latitude.toFixed(3)+"&longitude="+pos.coords.longitude.toFixed(3)+"&current=temperature_2m,wind_speed_10m,wind_direction_10m,wind_gusts_10m&wind_speed_unit=ms&timezone=Asia%2FSeoul";
     fetch(u).then(function(r){return r.json()}).then(function(d){var c=d&&d.current;if(!c){ws.textContent="날씨를 불러오지 못해 실외 값을 직접 입력해 주세요";return}
-      S.env.tOut=String(r1(c.temperature_2m));S.env.wind=String(r1(c.wind_speed_10m));S.env.wdir=WDIR[Math.round(((c.wind_direction_10m%360)/22.5))%16];
+      S.env.tOut=String(r1(c.temperature_2m));S.env.wind=String(r1(c.wind_speed_10m));S.env.wdir=WDIR[Math.round(((c.wind_direction_10m%360)/22.5))%16];S.env.lat=String(Math.round(pos.coords.latitude*1000)/1000);S.env.lon=String(Math.round(pos.coords.longitude*1000)/1000);S.env.locSrc="geo";S.env.locName="";
       S.env.src="실외 값 자동 입력 · Open-Meteo "+(c.time||"").replace("T"," ")+" · 순간최대 "+r1(c.wind_gusts_10m)+"m/s (지상 10m 기준)";
       syncEnvInputs();save();renderAI();
     }).catch(function(){ws.textContent="날씨를 불러오지 못해 실외 값을 직접 입력해 주세요"});
@@ -845,6 +878,9 @@ function fetchWeather(){
 function autoWeather(){if(!S.env.tOut&&!S.env.wind&&($("#c_date").value||today())===today())fetchWeather()}
 
 // ── PDF
+function climRows(){var cs=climSum();if(!cs)return "";var r='<tr><th>지역 겨울 날씨</th><td>최근 3겨울('+climPeriod(cs)+', 12~2월) '+esc(cs.name?cs.name+' ':'')+'평균 '+cs.t+'℃ · 바람 '+cs.v+'m/s · '+cs.top.map(function(x){return x.d+'풍 '+x.p+'%'}).join(' · ')+' <span style="color:#8A9399;font-size:10.5px">(Open-Meteo 과거 기상 자료)</span></td></tr>';
+  var ws=S.wins.map(function(w,i){var c=climWin(w);return c?esc(winName(w,i))+'('+esc(winDir(w))+'향) 바깥→실내(외풍) 겨울 시간의 '+c.lo+'~'+c.hi+'% (바람만 '+c.wind+'% · 굴뚝효과 모두 '+c.stack+'%)':null}).filter(Boolean);
+  if(ws.length)r+='<tr><th>겨울 압력 조건</th><td>'+ws.join('<br>')+'</td></tr>';return r}
 function buildPrint(){
   var siteRaw=$("#c_site").value||"-",site=esc(siteRaw),date=$("#c_date").value||today(),e=S.env,r=report();
   var now=new Date(),z=function(n){return String(n).padStart(2,"0")};
@@ -874,7 +910,7 @@ function buildPrint(){
   var inn=[];if(tI!==null)inn.push("실내 "+tI+"℃");if(e.rh)inn.push("습도 "+esc(e.rh)+"%");if(dp!==null)inn.push("이슬점 "+dp+"℃");
   H+='<div class="pblock">'+sh("3. 점검 조건")+'<table class="ti">'+(req?'<tr><th>의뢰자 의견</th><td>'+esc(req).replace(/\n/g,"<br>")+'</td></tr>':'')
    +'<tr><th>실외 기상</th><td>'+(wx.join(" · ")||"-")+(S.env.src&&/Open-Meteo/.test(S.env.src)?' <span style="color:#8A9399;font-size:10.5px">(Open-Meteo 기상 자료)</span>':'')+'</td></tr>'
-   +'<tr><th>실내 환경</th><td>'+(inn.join(" · ")||"-")+'</td></tr>'+((S.env.floor||S.env.ldir)?'<tr><th>세대 위치·방향</th><td>'+esc([(S.env.floors?S.env.floors+'층 건물 ':'')+(S.env.floor?S.env.floor+'층':''),S.env.ldir?'거실 '+S.env.ldir+'향':''].filter(Boolean).join(' · '))+'</td></tr>':'')+'</table></div>';
+   +'<tr><th>실내 환경</th><td>'+(inn.join(" · ")||"-")+'</td></tr>'+((S.env.floor||S.env.ldir)?'<tr><th>세대 위치·방향</th><td>'+esc([(S.env.floors?S.env.floors+'층 건물 ':'')+(S.env.floor?S.env.floor+'층':''),S.env.ldir?'거실 '+S.env.ldir+'향':''].filter(Boolean).join(' · '))+'</td></tr>':'')+climRows()+'</table></div>';
   // 4. 창호별 현황
   H+='<div class="pblock">'+sh("4. 창호별 현황")+'<table class="tl"><thead><tr><th>번호</th><th>위치</th><th>창 종류 · 구분</th><th>방향</th><th>창틀 크기</th><th>틈 길이</th><th>설치면</th><th>풍지판</th><th>바닥 높이</th><th>원인</th></tr></thead><tbody>'
    +S.wins.map(function(w,i){var n=causes.filter(function(x){return x.w===w}).length;return '<tr><td>'+(i+1)+'</td><td>'+esc(winName(w,i))+'</td><td class="l">'+kind(w)+'</td><td>'+esc(winDir(w)||"-")+'</td><td>'+(sz(w)?esc(w.fw+"×"+w.fh):"-")+'</td><td>'+(sz(w)?"약 "+sz(w).crack+"m":"-")+'</td><td>'+esc(w.surf||"-")+'</td><td>'+esc(w.fp||"-")+'</td><td>'+(num(w.sill)!==null?esc(w.sill)+"cm":"-")+'</td><td'+(n?' class="red"':' style="font-size:10px;line-height:1.25"')+'>'+(n?n+'건':'특이사항<br>없음')+'</td></tr>'}).join("")+'</tbody></table></div>';
@@ -915,12 +951,13 @@ function buildPrint(){
    +'<li>실외 온도와 바람은 점검 위치의 기상 자료(지상 10m 기준) 또는 현장 입력값이며, 실내 이슬점은 실내 온도·습도로 계산했습니다.</li>'
    +(usedStd?'<li>창호 단열 기준은 법제처 「건축물의 설비기준 등에 관한 규칙」과 「건축물의 에너지절약설계기준」 연혁을 참고했으며, 실제 적용 기준은 허가 신청 시점에 따라 달라질 수 있습니다.</li>':'')
    +'<li>'+esc(CFG.NOTICE)+'</li>'
-   +(hasOne?'<li>원데이 시공은 기존 발코니 창을 해체한 자리에 창호만 교체하는 구조로, 예전 창 크기에 맞춰 창짝 길이가 길어질 수 있고 최근 아파트 창호 설치부보다 단열이 떨어질 수 있는 조건을 감안해 판단했습니다. 인테리어 단열 시공이 있더라도 얇은 단열재가 쓰이는 경우가 많고, 창호 교체만으로 단열을 높이는 데는 한계가 있습니다.</li>':'')+(hasNew?'<li>신축 창호의 하자보수 청구 절차는 「공동주택관리법」 제36조·제39조와 같은 법 시행령 제38조를 참고했습니다.</li>':'')+'<li>창호 시공 기준은 표준시방서 KCS 41 55 02·03(창짝·창틀 겹침 하부 8mm·상부 12mm 이상, 발코니창 10mm 이상)과 LH 전문시방서 LHCS 41 55 02·03(설치 허용오차 수직·수평 각각 ±3mm)을 참고했습니다. 국가 표준시방서와 국토교통부 하자판정기준(고시 제2026-360호)에는 설치 허용오차 mm 기준이 없으며, 하자 여부는 기능상 지장(제22조)과 결로 관련 시공 상태(제15조)로 판단합니다.</li>'+(S.wins.some(function(w){return (w.usPos||'').trim()||w.ph.usF||w.ph.usC})?'<li>초음파 측정은 내창과 외창 사이에 초음파 발생기를 두고, 그 소리가 새어 나오는 틈을 초음파 카메라로 찾는 방식입니다. 발생기 없이 측정하면 누기 지점이 나타나지 않으므로, 사진의 표시점은 창 사이 공간과 이어진 기밀이 약한 자리를 뜻합니다.</li>':'')+(S.wins.some(function(w){return w.dgOn&&diag(w)})?'<li>창틀 대각선은 바깥쪽 모서리끼리 두 대각선을 실측해 비교했습니다. 대각선 차이(ΔD)는 창틀 가로(W)와 평균 대각선(D)으로 세로틀 기울기(≈ ΔD×D÷2W)로 환산해 LH 전문시방서의 설치 허용오차(수직·수평 ±3mm)와 비교했으며, 외부 창의 대각선 차이 자체에 대한 공식 허용값은 없습니다.</li>':'')+((stackP()||S.wins.some(function(w){return windFace(w)}))?'<li>바람 방향 영향은 창이 바라보는 방향과 점검 당시 바람이 불어오는 방향의 각도 차(45° 이내 정면, 90° 이내 비스듬, 그 밖은 등진 면)로 판단했습니다. 굴뚝효과 압력은 ΔP ≈ 3460×h×(1/T외−1/T내) [Pa]로, 층고 2.9m·중성대는 건물 높이의 중간이라고 가정한 참고 추정값이며, 바람 압력은 ½ρv²(지상 10m 풍속 기준)입니다.</li>':'')+'<li>모헤어 교체는 모헤어가 짧은 경우로 한정해 권했습니다'+(hasOne?'. 창틀 수직·수평 수리는 원데이 시공업체 보증과의 관계를 감안해 시공업체 요청을 우선으로 안내했습니다':'')+'.</li>'+'<li>점검한 뒤에 생긴 손상과, 가려져 있어 볼 수 없었던 부분은 이 보고서에 담기지 않았습니다.</li></ul>'
+   +(hasOne?'<li>원데이 시공은 기존 발코니 창을 해체한 자리에 창호만 교체하는 구조로, 예전 창 크기에 맞춰 창짝 길이가 길어질 수 있고 최근 아파트 창호 설치부보다 단열이 떨어질 수 있는 조건을 감안해 판단했습니다. 인테리어 단열 시공이 있더라도 얇은 단열재가 쓰이는 경우가 많고, 창호 교체만으로 단열을 높이는 데는 한계가 있습니다.</li>':'')+(hasNew?'<li>신축 창호의 하자보수 청구 절차는 「공동주택관리법」 제36조·제39조와 같은 법 시행령 제38조를 참고했습니다.</li>':'')+'<li>창호 시공 기준은 표준시방서 KCS 41 55 02·03(창짝·창틀 겹침 하부 8mm·상부 12mm 이상, 발코니창 10mm 이상)과 LH 전문시방서 LHCS 41 55 02·03(설치 허용오차 수직·수평 각각 ±3mm)을 참고했습니다. 국가 표준시방서와 국토교통부 하자판정기준(고시 제2026-360호)에는 설치 허용오차 mm 기준이 없으며, 하자 여부는 기능상 지장(제22조)과 결로 관련 시공 상태(제15조)로 판단합니다.</li>'+(S.wins.some(function(w){return (w.usPos||'').trim()||w.ph.usF||w.ph.usC})?'<li>초음파 측정은 내창과 외창 사이에 초음파 발생기를 두고, 그 소리가 새어 나오는 틈을 초음파 카메라로 찾는 방식입니다. 발생기 없이 측정하면 누기 지점이 나타나지 않으므로, 사진의 표시점은 창 사이 공간과 이어진 기밀이 약한 자리를 뜻합니다.</li>':'')+(S.wins.some(function(w){return w.dgOn&&diag(w)})?'<li>창틀 대각선은 바깥쪽 모서리끼리 두 대각선을 실측해 비교했습니다. 대각선 차이(ΔD)는 창틀 가로(W)와 평균 대각선(D)으로 세로틀 기울기(≈ ΔD×D÷2W)로 환산해 LH 전문시방서의 설치 허용오차(수직·수평 ±3mm)와 비교했으며, 외부 창의 대각선 차이 자체에 대한 공식 허용값은 없습니다.</li>':'')+(climSum()&&S.wins.some(function(w){return climWin(w)})?'<li>지역 겨울 날씨는 Open-Meteo 과거 기상 자료(지상 10m, 약 10km 격자)의 최근 3겨울 12~2월 시간별 값입니다. 겨울 압력 조건은 시간마다 바람 압력(풍압계수: 정면 +0.7, 45° +0.35, 옆면 −0.6, 뒷면 −0.3~−0.5의 고층 벽면 일반값, 창 높이 풍속 보정 지수 0.22)만 따진 경우와, 여기에 굴뚝효과(층고 2.9m, 중성대는 건물 높이 중간)를 모두 더한 경우로 나눠 바깥→실내(실내 음압)인 시간의 비율을 범위로 나타낸 참고 추정입니다. 실제 값은 세대가 현관문·계단실·배관 등으로 건물 안 공기와 이어진 정도에 따라 이 범위 사이에 있습니다. 실내 온도는 점검 당시 값이 겨울 내내 같다고 보았습니다.</li>':'')+((stackP()||S.wins.some(function(w){return windFace(w)}))?'<li>바람 방향 영향은 창이 바라보는 방향과 점검 당시 바람이 불어오는 방향의 각도 차(45° 이내 정면, 90° 이내 비스듬, 그 밖은 등진 면)로 판단했습니다. 굴뚝효과 압력은 ΔP ≈ 3460×h×(1/T외−1/T내) [Pa]로, 층고 2.9m·중성대는 건물 높이의 중간이라고 가정한 참고 추정값이며, 바람 압력은 ½ρv²(지상 10m 풍속 기준)입니다.</li>':'')+'<li>모헤어 교체는 모헤어가 짧은 경우로 한정해 권했습니다'+(hasOne?'. 창틀 수직·수평 수리는 원데이 시공업체 보증과의 관계를 감안해 시공업체 요청을 우선으로 안내했습니다':'')+'.</li>'+'<li>점검한 뒤에 생긴 손상과, 가려져 있어 볼 수 없었던 부분은 이 보고서에 담기지 않았습니다.</li></ul>'
    +'<div class="endnote">※ 본 보고서는 창호 외풍 점검 참고 자료이며 법적 효력이 없습니다. · 보고서 번호 '+repNo+'</div></div>';
   var area=$("#print-area");area.className="rp";area.innerHTML=H;
 }
 function pdfName(){var s=($("#c_site").value||"현장").replace(/[\\/:*?"<>|]+/g,"").replace(/\s+/g," ").trim().slice(0,40);return "창호외풍점검보고서_"+s+"_"+($("#c_date").value||today())+".pdf"}
 function savePDF(){
+  if(needClim()&&!climReady()&&!savePDF._w){savePDF._w=1;toast("지역 겨울 날씨를 불러오는 중…");var t0=Date.now();(function wt(){if(climReady()||(!climBusy&&Date.now()-t0>1500)||Date.now()-t0>20000){savePDF();savePDF._w=0;return}maybeClim();setTimeout(wt,400)})();return}
   if(!report()){toast("창호 위치를 고르거나 부위별 외풍 점검 항목을 체크해 주세요");return}
   if(!window.jspdf||!window.html2canvas){toast("PDF 모듈을 불러오는 중입니다. 잠시 후 다시 눌러 주세요");return}
   buildPrint();toast("PDF를 만드는 중…");
@@ -983,7 +1020,7 @@ document.addEventListener("DOMContentLoaded",function(){
   $("#btnAddWin").addEventListener("click",function(){var nw=newWin(),f=S.wins[0];if(f){nw.age=f.age||"";nw.year=f.year||""}S.wins.push(nw);renderWins();save();toast("창호를 추가했습니다")});
   $("#goAi").addEventListener("click",function(){renderAI();var el=$("#aiCard");el.classList.remove("hide");var y=el.getBoundingClientRect().top+window.pageYOffset-70;window.scrollTo(0,Math.max(0,y));el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")});
   $("#btnSave").addEventListener("click",savePDF);
-  $("#btnReset").addEventListener("click",function(){if(!confirm("모든 입력을 지우고 새로 시작할까요?"))return;localStorage.removeItem(CFG.STORAGE_KEY);S={env:{tOut:"",wind:"",wdir:"",tIn:"",rh:"",fan:false,src:"",floor:"",floors:"",ldir:""},wins:[newWin()]};$("#c_site").value="";$("#c_req").value="";$("#c_date").value=today();syncEnvInputs();renderWins();renderAI();toast("초기화되었습니다");autoWeather()});
+  $("#btnReset").addEventListener("click",function(){if(!confirm("모든 입력을 지우고 새로 시작할까요?"))return;localStorage.removeItem(CFG.STORAGE_KEY);S={env:{tOut:"",wind:"",wdir:"",tIn:"",rh:"",fan:false,src:"",floor:"",floors:"",ldir:"",lat:"",lon:"",locName:"",locSrc:""},wins:[newWin()]};$("#c_site").value="";$("#c_req").value="";$("#c_date").value=today();syncEnvInputs();renderWins();renderAI();toast("초기화되었습니다");autoWeather()});
   if(!load())S.wins=[newWin()];
   if(!$("#c_date").value)$("#c_date").value=today();
   syncEnvInputs();renderWins();renderAI();autoWeather();
