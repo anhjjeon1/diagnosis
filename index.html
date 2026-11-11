@@ -490,7 +490,7 @@ body{padding-bottom:calc(66px + var(--safe-b))}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 4.7</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 4.8</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -833,7 +833,7 @@ function buildPrint(){
   // 6. 창호별 상세 (사진 + 표)
   S.wins.forEach(function(w,i){
     var ph=[];if(w.front)ph.push([w.front,"일반 · 전면"]);if(w.close)ph.push([w.close,"일반 · 근접"]);
-    DEVS.forEach(function(d){var tag=d.k==="th"&&num(w.thMin)!==null?" · 최저 "+w.thMin+"℃":d.k==="us"&&(w.usPos||"").trim()?" · "+w.usPos.trim():"";if(w.ph[d.k+"F"])ph.push([w.ph[d.k+"F"],d.n+" · 전면"+tag]);if(w.ph[d.k+"C"])ph.push([w.ph[d.k+"C"],d.n+" · 근접"])});
+    DEVS.forEach(function(d){if(w.ph[d.k+"F"])ph.push([w.ph[d.k+"F"],d.n+" · 전면"]);if(w.ph[d.k+"C"])ph.push([w.ph[d.k+"C"],d.n+" · 근접"])});
     CHK.forEach(function(c){var x=w.chk[c.k];if(x&&x.photo)ph.push([x.photo,cLabel(w,c)+(x.on?"":" (참고)")])});
     var my=causes.filter(function(x){return x.w===w});
     // 제목 + 표를 한 덩어리로(표가 혼자 다음 쪽으로 넘어가지 않게), 사진은 그 아래
