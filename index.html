@@ -487,19 +487,18 @@ body{padding-bottom:calc(66px + var(--safe-b))}
 .devval.wide{flex:1;max-width:58%}.devval.wide .db{width:100%;text-align:left;font-size:13px;padding:2px 8px}
 .devlab{display:flex;align-items:center}
 
-/* 창틀 대각선 실측 (V5.0) */
-.dgrow{padding:7px 9px}
-.dg-head b{font-size:13.5px;font-weight:760;color:var(--ink)}.dg-head small{display:block;font-size:11px;color:var(--ink-3);font-weight:600}
-.dg-in{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
-.dg-in label{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;color:var(--ink-2);white-space:nowrap}
-.dg-in .db{flex:1;min-width:0;height:34px;font-size:15px}
-.dg-res{margin-top:6px;font-size:12px;font-weight:700;color:var(--ink-3)}
+/* 창틀 대각선 실측 (V5.1: 체크박스·2줄) */
+.dgrow .ck-txt small{font-size:11px;color:var(--ink-3);font-weight:600}
+.dg-line{display:flex;align-items:center;gap:6px;margin-top:5px;padding-left:30px}
+.dg-line label{display:flex;align-items:center;gap:3px;font-size:13px;font-weight:800;color:var(--ink-2)}
+.dg-line .db{width:56px;height:32px;font-size:14.5px;padding:2px 4px}
+.dg-res{flex:1;min-width:0;font-size:11px;white-space:nowrap;letter-spacing:-.2px;font-weight:800;color:var(--ink-3);line-height:1.25;text-align:right}
 .dg-res.ok{color:var(--brand-700)}.dg-res.bad{color:#C62828}
 </style>
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 5.0</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 5.1</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -565,12 +564,11 @@ var CHK=[
  {k:"etc",n:"기타",d:"",free:true}];
 // 항목 사진은 항목 아래에 크게 (📷 버튼으로 다시 찍으면 교체, ✕로 삭제)
 function bigPhoto(url,c,w){if(!url)return "";return '<div class="ck-big"><img src="'+url+'" alt="'+esc(c.n)+' 사진"><span class="photo-cap">'+esc(c.n)+'</span><button class="photo-del" data-act="delphoto" data-slot="c:'+c.k+'" data-w="'+w.id+'" aria-label="사진 삭제">✕</button></div>'}
-function diagTxt(w){var d=diag(w);if(!d)return {t:"바깥쪽 대각선 두 개를 mm로 넣으세요",c:""};
-  if(d.tilt===null)return {t:"차이 "+d.diff+"mm · ② 창틀 가로를 넣으면 기울기로 환산합니다",c:""};
-  return {t:"차이 "+d.diff+"mm → 세로틀 기울기 약 "+d.tilt+"mm "+(d.over?"(±"+DIAG_LIM+"mm 초과 · 시공 불량 의심)":"(±"+DIAG_LIM+"mm 이내)"),c:d.over?"bad":"ok"}}
-function diagRow(w){var dt=diagTxt(w);return '<div class="ck dgrow'+(diagOver(w)?' on':'')+'"><div class="dg-head"><b>창틀의 대각선 실측 차이</b><small>창틀 바깥쪽 모서리끼리</small></div>'
-  +'<div class="dg-in"><label>↘ 좌상→우하<input class="db" inputmode="decimal" placeholder="mm" value="'+esc(w.dg1||"")+'" data-wf="dg1" data-w="'+w.id+'"></label><label>↙ 우상→좌하<input class="db" inputmode="decimal" placeholder="mm" value="'+esc(w.dg2||"")+'" data-wf="dg2" data-w="'+w.id+'"></label></div>'
-  +'<div class="dg-res '+dt.c+'" id="dgres_'+w.id+'">'+esc(dt.t)+'</div></div>'}
+function diagTxt(w){var d=diag(w);if(!d)return {t:"대각선 두 개 입력",c:""};
+  if(d.tilt===null)return {t:"차이 "+d.diff+"mm (가로 입력 시 환산)",c:""};
+  return {t:"차이 "+d.diff+" → 기울기 "+d.tilt+"mm "+(d.over?"초과":"양호"),c:d.over?"bad":"ok"}}
+function diagRow(w){var on=!!w.dgOn,dt=diagTxt(w);return '<div class="ck dgrow'+(diagOver(w)?' on':'')+'"><div class="ck-top"><button class="ck-box" data-act="dgchk" data-w="'+w.id+'"><span class="ck-mark">'+(on?'✓':'')+'</span><span class="ck-txt">창틀의 대각선 실측 차이 <small style="display:inline">· 바깥쪽 모서리끼리</small></span></button></div>'
+  +(on?'<div class="dg-line"><label>↘<input class="db" inputmode="decimal" placeholder="mm" value="'+esc(w.dg1||"")+'" data-wf="dg1" data-w="'+w.id+'"></label><label>↙<input class="db" inputmode="decimal" placeholder="mm" value="'+esc(w.dg2||"")+'" data-wf="dg2" data-w="'+w.id+'"></label><span class="dg-res '+dt.c+'" id="dgres_'+w.id+'">'+esc(dt.t)+'</span></div>':'')+'</div>'}
 function cLabel(w,c){if(!c.free)return c.n;var m=((w.chk[c.k]||{}).memo||"").trim();return m?"기타("+m+")":"기타"}
 var WTYPES=["미서기 이중창","미서기 단창","분합창","여닫이·틸트","고정창","기타"];
 var SILLS=[];for(var _s=0;_s<=150;_s+=10)SILLS.push(_s);
@@ -622,7 +620,7 @@ var CAUSE_FIX={
 var DIAG_LIM=3; // LH 전문시방서 LHCS 41 55 02·03 설치 허용오차 수직·수평 ±3mm (참고 기준)
 function diag(w){var a=num(w.dg1),b=num(w.dg2);if(a===null||b===null||a<=0||b<=0)return null;var diff=r1(Math.abs(a-b)),W=num(w.fw),o={a:a,b:b,diff:diff,tilt:null,over:null};
   if(W&&W>0){var D=(a+b)/2;o.tilt=r1(diff*D/(2*W));o.over=o.tilt>DIAG_LIM}return o}
-function diagOver(w){var d=diag(w);return !!(d&&d.over)}
+function diagOver(w){var d=w.dgOn&&diag(w);return !!(d&&d.over)}
 var ONEDAY_GEO=["sag","plumb","diag"]; // 수직·수평(시공 상태) 항목
 function isOneday(w){return w&&w.age===AGES[1]}
 function fixFor(k,w){var f=CAUSE_FIX[k]||"-";if(isOneday(w)&&ONEDAY_GEO.indexOf(k)>=0)f="원데이 시공업체에 보수 요청 우선(다른 업체 수리 시 보증·법적 분쟁 우려) · "+f;if(w&&w.age===AGES[0])f="건설사(사업주체)에 하자보수 청구 · "+f;return f}
@@ -642,7 +640,7 @@ function today(){var d=new Date(),z=function(n){return String(n).padStart(2,"0")
 function sz(w){var a=num(w.fw),b=num(w.fh);if(!a||!b||a<=0||b<=0)return null;var per=r1(2*(a+b)/1000),meet=/미서기|분합/.test(w.type)?r1(b/1000):0,crack=r1(per+meet);
   var area=Math.round(a*b/1e4)/100,f=function(n){return Math.round(n).toLocaleString("ko-KR")};
   return{crack:crack,area:area,txt:f(a)+"×"+f(b)+"mm(면적 "+area+"㎡, 틈 길이 약 "+crack+"m = 창틀 둘레 "+per+"m"+(meet?" + 여밈대 "+meet+"m":"")+")"}}
-function newWin(){return{id:uid(),name:"",type:"미서기 이중창",front:null,close:null,note:"",ins:"",surf:"",sill:"",fp:"",fw:"",fh:"",age:"",year:"",thMin:"",usPos:"",dg1:"",dg2:"",ph:{},chk:{},fix:[]}}
+function newWin(){return{id:uid(),name:"",type:"미서기 이중창",front:null,close:null,note:"",ins:"",surf:"",sill:"",fp:"",fw:"",fh:"",age:"",year:"",thMin:"",usPos:"",dg1:"",dg2:"",dgOn:false,ph:{},chk:{},fix:[]}}
 function getWin(id){return S.wins.filter(function(w){return w.id===id})[0]}
 function getChk(w,k){if(!w.chk[k])w.chk[k]={on:false,memo:"",photo:null};return w.chk[k]}
 function isDouble(w){return /이중창/.test(w.type)}
@@ -766,7 +764,7 @@ function report(){
       else if(gap<=2){dewHit=true;L.push(nm+"열화상 최저 온도는 "+t+"℃로, 실내 이슬점 "+dpv+"℃보다 "+gap+"℃만 높아 결로 직전 수준입니다.")}
       else L.push(nm+"열화상 최저 온도는 "+t+"℃로, 실내 이슬점 "+dpv+"℃보다 "+gap+"℃ 높아 점검 당시에는 결로 조건이 아니었습니다.")}
     else if(t!==null)L.push(nm+"열화상 최저 온도는 "+t+"℃입니다.");
-    var dg=diag(w);if(dg){var dgs=nm+"창틀 바깥쪽 대각선 실측값은 "+dg.a+"mm와 "+dg.b+"mm로 "+dg.diff+"mm 차이가 납니다.";
+    var dg=w.dgOn&&diag(w);if(dg){var dgs=nm+"창틀 바깥쪽 대각선 실측값은 "+dg.a+"mm와 "+dg.b+"mm로 "+dg.diff+"mm 차이가 납니다.";
       if(dg.tilt===null)dgs+=" 창틀 크기를 넣으면 세로틀 기울기로 환산해 판단할 수 있습니다.";
       else if(dg.over)dgs+=" 창틀 크기("+w.fw+"×"+w.fh+"mm)로 환산하면 한쪽 세로틀이 약 "+dg.tilt+"mm 기울어진 것과 같아, LH 전문시방서의 설치 허용오차(수직·수평 ±"+DIAG_LIM+"mm)를 넘습니다. 창틀이 직사각형에서 틀어진 상태로, 창틀 시공(수직·수평) 불량을 의심할 수 있습니다.";
       else dgs+=" 창틀 크기로 환산한 세로틀 기울기는 약 "+dg.tilt+"mm로 설치 허용오차(±"+DIAG_LIM+"mm) 안이어서, 창틀 직각 상태는 양호한 편입니다.";
@@ -795,10 +793,10 @@ function renderAI(){
 }
 
 // ── 저장 (사진 제외)
-function save(){try{localStorage.setItem(CFG.STORAGE_KEY,JSON.stringify({site:$("#c_site").value,date:$("#c_date").value,req:$("#c_req").value,env:S.env,wins:S.wins.map(function(w){var c={};Object.keys(w.chk).forEach(function(k){c[k]={on:!!w.chk[k].on,memo:w.chk[k].memo||""}});return{id:w.id,name:w.name,nameEtc:w.nameEtc||"",type:w.type,note:w.note,surf:w.surf,fp:w.fp,sill:w.sill,fw:w.fw,fh:w.fh,age:w.age,year:w.year,thMin:w.thMin||"",usPos:w.usPos||"",dg1:w.dg1||"",dg2:w.dg2||"",chk:c,fix:w.fix}})}))}catch(e){}}
+function save(){try{localStorage.setItem(CFG.STORAGE_KEY,JSON.stringify({site:$("#c_site").value,date:$("#c_date").value,req:$("#c_req").value,env:S.env,wins:S.wins.map(function(w){var c={};Object.keys(w.chk).forEach(function(k){c[k]={on:!!w.chk[k].on,memo:w.chk[k].memo||""}});return{id:w.id,name:w.name,nameEtc:w.nameEtc||"",type:w.type,note:w.note,surf:w.surf,fp:w.fp,sill:w.sill,fw:w.fw,fh:w.fh,age:w.age,year:w.year,thMin:w.thMin||"",usPos:w.usPos||"",dg1:w.dg1||"",dg2:w.dg2||"",dgOn:!!w.dgOn,chk:c,fix:w.fix}})}))}catch(e){}}
 function load(){try{var d=JSON.parse(localStorage.getItem(CFG.STORAGE_KEY)||"null");if(!d)return false;$("#c_site").value=d.site||"";$("#c_date").value=d.date||"";$("#c_req").value=d.req||"";
   if(d.env)Object.keys(S.env).forEach(function(k){if(d.env[k]!==undefined)S.env[k]=d.env[k]});
-  S.wins=(d.wins||[]).map(function(w){var n=newWin();n.id=w.id||n.id;n.name=w.name||"";n.nameEtc=w.nameEtc||"";if(n.name&&ROOMS.indexOf(n.name)<0){n.nameEtc=n.name;n.name="기타"}n.type=w.type||n.type;n.note=w.note||"";n.surf=w.surf||"";n.fp=w.fp||"";n.sill=w.sill||"";n.fw=w.fw||"";n.fh=w.fh||"";n.age=w.age||"";if(n.age==="신축(3년 이내)")n.age="신축";n.year=w.year||"";n.thMin=w.thMin||"";n.usPos=w.usPos||"";n.dg1=w.dg1||"";n.dg2=w.dg2||"";n.fix=Array.isArray(w.fix)?w.fix:[];
+  S.wins=(d.wins||[]).map(function(w){var n=newWin();n.id=w.id||n.id;n.name=w.name||"";n.nameEtc=w.nameEtc||"";if(n.name&&ROOMS.indexOf(n.name)<0){n.nameEtc=n.name;n.name="기타"}n.type=w.type||n.type;n.note=w.note||"";n.surf=w.surf||"";n.fp=w.fp||"";n.sill=w.sill||"";n.fw=w.fw||"";n.fh=w.fh||"";n.age=w.age||"";if(n.age==="신축(3년 이내)")n.age="신축";n.year=w.year||"";n.thMin=w.thMin||"";n.usPos=w.usPos||"";n.dg1=w.dg1||"";n.dg2=w.dg2||"";n.dgOn=!!w.dgOn||!!(n.dg1&&n.dg2);n.fix=Array.isArray(w.fix)?w.fix:[];
     Object.keys(w.chk||{}).forEach(function(k){var y=getChk(n,k);y.on=!!w.chk[k].on;y.memo=w.chk[k].memo||""});return n});
   return S.wins.length>0}catch(e){return false}}
 function syncEnvInputs(){document.querySelectorAll("[data-env]").forEach(function(el){var k=el.dataset.env;if(el.type==="checkbox")el.checked=!!S.env[k];else el.value=S.env[k]||""});$("#wxSrc").textContent=S.env.src||"";updateDew()}
@@ -869,7 +867,7 @@ function buildPrint(){
     H+='<div class="pblock">'+(i===0?sh("6. 창호별 상세"):'')+'<div class="icard'+(phB.length?' top':'')+'" style="'+(phB.length?'':'padding-bottom:10px')+'"><div class="ihead"><div><b>'+(i+1)+'. '+esc(winName(w,i))+'</b><i>'+kind(w)+'</i></div><span>청개구리샤시 · 창호</span></div><table class="ti" style="margin-top:8px">'
       +'<tr><th>확인된 원인</th><td>'+(my.length?my.map(function(x){return '<span class="red">'+esc(x.n)+'</span>'+(x.memo?' — '+esc(x.memo):'')}).join("<br>"):"외풍 원인이 확인되지 않았습니다.")+'</td></tr>'
       +'<tr><th>권장 수리</th><td>'+(my.length?my.map(function(x){return esc(x.n)+' → '+esc(fixFor(x.k,x.w))}).join("<br>"):"-")+'</td></tr>'
-      +'<tr><th>설치 상태</th><td>'+(inst.length?esc(inst.join(" · ")):"-")+'</td></tr>'+(function(){var m=[],t=num(w.thMin),dv=dewPoint();if(t!==null)m.push("열화상 최저 "+t+"℃"+(dv!==null?" (실내 이슬점 "+dv+"℃"+(t<=dv?" 이하 → 결로 조건":(t-dv<=2?", 차이 "+r1(t-dv)+"℃ → 결로 직전":""))+")":""));if((w.usPos||"").trim())m.push("초음파 누기 위치(창 사이 발생기 소리): "+w.usPos.trim());var dq=diag(w);if(dq)m.push("창틀 대각선 "+dq.a+"·"+dq.b+"mm, 차이 "+dq.diff+"mm"+(dq.tilt!==null?" → 세로틀 기울기 약 "+dq.tilt+"mm"+(dq.over?" (±"+DIAG_LIM+"mm 초과)":" (±"+DIAG_LIM+"mm 이내)"):""));return m.length?'<tr><th>측정 결과</th><td>'+esc(m.join(" · "))+'</td></tr>':''})()+'</table></div></div>';
+      +'<tr><th>설치 상태</th><td>'+(inst.length?esc(inst.join(" · ")):"-")+'</td></tr>'+(function(){var m=[],t=num(w.thMin),dv=dewPoint();if(t!==null)m.push("열화상 최저 "+t+"℃"+(dv!==null?" (실내 이슬점 "+dv+"℃"+(t<=dv?" 이하 → 결로 조건":(t-dv<=2?", 차이 "+r1(t-dv)+"℃ → 결로 직전":""))+")":""));if((w.usPos||"").trim())m.push("초음파 누기 위치(창 사이 발생기 소리): "+w.usPos.trim());var dq=w.dgOn&&diag(w);if(dq)m.push("창틀 대각선 "+dq.a+"·"+dq.b+"mm, 차이 "+dq.diff+"mm"+(dq.tilt!==null?" → 세로틀 기울기 약 "+dq.tilt+"mm"+(dq.over?" (±"+DIAG_LIM+"mm 초과)":" (±"+DIAG_LIM+"mm 이내)"):""));return m.length?'<tr><th>측정 결과</th><td>'+esc(m.join(" · "))+'</td></tr>':''})()+'</table></div></div>';
     phB.forEach(function(b,bi){H+='<div class="pblock"><div class="icard '+(bi===phB.length-1?'bot':'mid')+'">'+b+'</div></div>'});
   });
   // 7. 수리 확인표
@@ -891,7 +889,7 @@ function buildPrint(){
    +'<li>실외 온도와 바람은 점검 위치의 기상 자료(지상 10m 기준) 또는 현장 입력값이며, 실내 이슬점은 실내 온도·습도로 계산했습니다.</li>'
    +(usedStd?'<li>창호 단열 기준은 법제처 「건축물의 설비기준 등에 관한 규칙」과 「건축물의 에너지절약설계기준」 연혁을 참고했으며, 실제 적용 기준은 허가 신청 시점에 따라 달라질 수 있습니다.</li>':'')
    +'<li>'+esc(CFG.NOTICE)+'</li>'
-   +(hasOne?'<li>원데이 시공은 기존 발코니 창을 해체한 자리에 창호만 교체하는 구조로, 예전 창 크기에 맞춰 창짝 길이가 길어질 수 있고 최근 아파트 창호 설치부보다 단열이 떨어질 수 있는 조건을 감안해 판단했습니다. 인테리어 단열 시공이 있더라도 얇은 단열재가 쓰이는 경우가 많고, 창호 교체만으로 단열을 높이는 데는 한계가 있습니다.</li>':'')+(hasNew?'<li>신축 창호의 하자보수 청구 절차는 「공동주택관리법」 제36조·제39조와 같은 법 시행령 제38조를 참고했습니다.</li>':'')+'<li>창호 시공 기준은 표준시방서 KCS 41 55 02·03(창짝·창틀 겹침 하부 8mm·상부 12mm 이상, 발코니창 10mm 이상)과 LH 전문시방서 LHCS 41 55 02·03(설치 허용오차 수직·수평 각각 ±3mm)을 참고했습니다. 국가 표준시방서와 국토교통부 하자판정기준(고시 제2026-360호)에는 설치 허용오차 mm 기준이 없으며, 하자 여부는 기능상 지장(제22조)과 결로 관련 시공 상태(제15조)로 판단합니다.</li>'+(S.wins.some(function(w){return (w.usPos||'').trim()||w.ph.usF||w.ph.usC})?'<li>초음파 측정은 내창과 외창 사이에 초음파 발생기를 두고, 그 소리가 새어 나오는 틈을 초음파 카메라로 찾는 방식입니다. 발생기 없이 측정하면 누기 지점이 나타나지 않으므로, 사진의 표시점은 창 사이 공간과 이어진 기밀이 약한 자리를 뜻합니다.</li>':'')+(S.wins.some(function(w){return diag(w)})?'<li>창틀 대각선은 바깥쪽 모서리끼리 두 대각선을 실측해 비교했습니다. 대각선 차이(ΔD)는 창틀 가로(W)와 평균 대각선(D)으로 세로틀 기울기(≈ ΔD×D÷2W)로 환산해 LH 전문시방서의 설치 허용오차(수직·수평 ±3mm)와 비교했으며, 외부 창의 대각선 차이 자체에 대한 공식 허용값은 없습니다.</li>':'')+'<li>모헤어 교체는 모헤어가 짧은 경우로 한정해 권했습니다'+(hasOne?'. 창틀 수직·수평 수리는 원데이 시공업체 보증과의 관계를 감안해 시공업체 요청을 우선으로 안내했습니다':'')+'.</li>'+'<li>점검한 뒤에 생긴 손상과, 가려져 있어 볼 수 없었던 부분은 이 보고서에 담기지 않았습니다.</li></ul>'
+   +(hasOne?'<li>원데이 시공은 기존 발코니 창을 해체한 자리에 창호만 교체하는 구조로, 예전 창 크기에 맞춰 창짝 길이가 길어질 수 있고 최근 아파트 창호 설치부보다 단열이 떨어질 수 있는 조건을 감안해 판단했습니다. 인테리어 단열 시공이 있더라도 얇은 단열재가 쓰이는 경우가 많고, 창호 교체만으로 단열을 높이는 데는 한계가 있습니다.</li>':'')+(hasNew?'<li>신축 창호의 하자보수 청구 절차는 「공동주택관리법」 제36조·제39조와 같은 법 시행령 제38조를 참고했습니다.</li>':'')+'<li>창호 시공 기준은 표준시방서 KCS 41 55 02·03(창짝·창틀 겹침 하부 8mm·상부 12mm 이상, 발코니창 10mm 이상)과 LH 전문시방서 LHCS 41 55 02·03(설치 허용오차 수직·수평 각각 ±3mm)을 참고했습니다. 국가 표준시방서와 국토교통부 하자판정기준(고시 제2026-360호)에는 설치 허용오차 mm 기준이 없으며, 하자 여부는 기능상 지장(제22조)과 결로 관련 시공 상태(제15조)로 판단합니다.</li>'+(S.wins.some(function(w){return (w.usPos||'').trim()||w.ph.usF||w.ph.usC})?'<li>초음파 측정은 내창과 외창 사이에 초음파 발생기를 두고, 그 소리가 새어 나오는 틈을 초음파 카메라로 찾는 방식입니다. 발생기 없이 측정하면 누기 지점이 나타나지 않으므로, 사진의 표시점은 창 사이 공간과 이어진 기밀이 약한 자리를 뜻합니다.</li>':'')+(S.wins.some(function(w){return w.dgOn&&diag(w)})?'<li>창틀 대각선은 바깥쪽 모서리끼리 두 대각선을 실측해 비교했습니다. 대각선 차이(ΔD)는 창틀 가로(W)와 평균 대각선(D)으로 세로틀 기울기(≈ ΔD×D÷2W)로 환산해 LH 전문시방서의 설치 허용오차(수직·수평 ±3mm)와 비교했으며, 외부 창의 대각선 차이 자체에 대한 공식 허용값은 없습니다.</li>':'')+'<li>모헤어 교체는 모헤어가 짧은 경우로 한정해 권했습니다'+(hasOne?'. 창틀 수직·수평 수리는 원데이 시공업체 보증과의 관계를 감안해 시공업체 요청을 우선으로 안내했습니다':'')+'.</li>'+'<li>점검한 뒤에 생긴 손상과, 가려져 있어 볼 수 없었던 부분은 이 보고서에 담기지 않았습니다.</li></ul>'
    +'<div class="endnote">※ 본 보고서는 창호 외풍 점검 참고 자료이며 법적 효력이 없습니다. · 보고서 번호 '+repNo+'</div></div>';
   var area=$("#print-area");area.className="rp";area.innerHTML=H;
 }
@@ -929,7 +927,8 @@ document.addEventListener("DOMContentLoaded",function(){
   var list=$("#winList");
   list.addEventListener("click",function(ev){
     var b=ev.target.closest("[data-act]");if(!b)return;var w=getWin(b.dataset.w);if(!w)return;var a=b.dataset.act;
-    if(a==="chk"){var xk=getChk(w,b.dataset.k);xk.on=!xk.on}
+    if(a==="dgchk"){w.dgOn=!w.dgOn}
+    else if(a==="chk"){var xk=getChk(w,b.dataset.k);xk.on=!xk.on}
     else if(a==="surf"){w.surf=(w.surf===b.dataset.v?"":b.dataset.v)}
     else if(a==="fp"){w.fp=(w.fp===b.dataset.v?"":b.dataset.v)}
     else if(a==="addphoto"){var inp=list.querySelector('input[data-file="'+b.dataset.slot+'"][data-w="'+w.id+'"]');if(inp)inp.click();return}
