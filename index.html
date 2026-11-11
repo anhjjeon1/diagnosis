@@ -498,7 +498,7 @@ body{padding-bottom:calc(66px + var(--safe-b))}
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 5.3</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 5.4</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -716,6 +716,7 @@ function updateSteps(){
 function updateDew(){var dp=dewPoint();$("#dewOut").value=dp===null?"":dp}
 
 // ── 진단 의견 (규칙 기반, 입력값만 사용)
+function winChecked(w){return !!(w.name||w.front||w.close||num(w.thMin)!==null||(w.usPos||"").trim()||w.dgOn||Object.keys(w.ph||{}).some(function(k){return w.ph[k]}))}
 function report(){
   var e=S.env,L=[],total=0;
   var tO=num(e.tOut),tI=num(e.tIn),wd=num(e.wind);
@@ -732,7 +733,10 @@ function report(){
   var agg={},insGap=false,ages={};
   S.wins.forEach(function(w,i){
     var on=CHK.filter(function(c){return w.chk[c.k]&&w.chk[c.k].on});var dgo=diagOver(w);
-    if(!on.length&&w.fp!=="없음"&&!dgo)return;total+=on.length+(w.fp==="없음"?1:0)+(dgo?1:0);
+    if(!on.length&&w.fp!=="없음"&&!dgo){if(!winChecked(w))return;var s0="'"+winName(w,i)+"'("+w.type+(w.age?", "+w.age+(w.age===AGES[1]&&w.year?" · "+w.year+"년 준공":""):"")+")에서는 외풍 원인으로 볼 만한 특이사항이 없습니다.";
+      var inst0=[];if(w.surf)inst0.push("창호 설치면 마감 "+w.surf);if(w.fp==="있음")inst0.push("풍지판 있음");if(num(w.sill)!==null)inst0.push("창틀과 바닥 높이 "+w.sill+"cm");if(inst0.length)s0+=" 설치 상태는 "+inst0.join(", ")+"입니다.";
+      var z0=sz(w);if(z0)s0+=" 창틀 크기는 "+z0.txt+"입니다.";L.push(s0);return}
+    total+=on.length+(w.fp==="없음"?1:0)+(dgo?1:0);
     if(w.age)ages[w.age]=(ages[w.age]||[]).concat([winName(w,i)]);
     var s="'"+winName(w,i)+"'("+w.type+(w.age?", "+w.age+(w.age===AGES[1]&&w.year?" · "+w.year+"년 준공":""):"")+")에서 확인된 외풍 원인은 "+on.map(function(c){return cLabel(w,c)}).concat(w.fp==="없음"?["풍지판 없음"]:[]).concat(dgo?["창틀 대각선 차이(직각 불량)"]:[]).join(", ")+"입니다.";
     var inst=[];if(w.surf)inst.push("창호 설치면 마감 "+w.surf);if(w.fp==="있음")inst.push("풍지판 있음");if(num(w.sill)!==null)inst.push("창틀과 바닥 높이 "+w.sill+"cm");
@@ -743,8 +747,9 @@ function report(){
     if(w.fp==="없음")agg["풍지판 없음"]=(agg["풍지판 없음"]||0)+1;
     if(dgo)agg["창틀 대각선 차이"]=(agg["창틀 대각선 차이"]||0)+1;
   });
-  if(!total)return null;
-  if(req)L.push("의뢰하신 불편과 관련해 현장에서 확인된 원인은 위와 같습니다.");
+  if(!total&&!S.wins.some(winChecked))return null;
+  if(total){if(req)L.push("의뢰하신 불편과 관련해 현장에서 확인된 원인은 위와 같습니다.")}
+  else L.push((req?"의뢰하신 불편과 관련해 이번 점검 범위에서는":"점검한 창호 모두에서")+" 외풍 원인으로 볼 만한 특이사항이 확인되지 않았습니다. 외풍은 바람이 세고 실내외 온도차가 큰 날 더 크게 나타나므로, 불편이 계속되면 그런 날 다시 확인하시기를 권합니다.");
   var many=S.wins.length>1;
   if(ages[AGES[0]])L.push((many?jo("'"+ages[AGES[0]].join("', '")+"'","은","는")+" ":"")+"신축 창호로, 입주 3년 이내라면 공동주택관리법상 창호공사 하자담보책임기간(입주자에게 인도한 날부터 3년) 안에 있어 사업주체(건설사)에 하자보수를 요청할 수 있습니다. 기간 안에 발생한 하자는 기간이 지난 뒤에도 보수 대상이 될 수 있으니 이 소견서와 사진을 보관해 두시기 바랍니다.");
   if(ages[AGES[0]])L.push("신축 창호의 수리는 시공한 건설사(사업주체)에 하자보수를 청구하는 방법으로 진행합니다. ① 건설사 고객센터(하자 접수)나 관리사무소를 통해 이 보고서와 사진을 첨부해 서면(앱·전자문서 포함)으로 접수하고, 접수 날짜와 접수번호를 기록해 두십시오. 전유부분은 입주자가 직접 청구하거나 관리주체가 대신 청구할 수 있습니다. ② 건설사는 청구받은 날부터 15일 이내에 보수하거나, 하자 부위·보수 방법·보수 기간(원칙적으로 60일 이내)·담당자 연락처를 적은 하자보수계획을 서면으로 알려야 하며, 하자가 아니라고 보면 그 이유를 서면으로 알려야 합니다(공동주택관리법 시행령 제38조). ③ 하자 여부를 다투거나 보수가 이루어지지 않으면 국토교통부 하자심사·분쟁조정위원회에 하자 판정이나 분쟁 조정을 신청할 수 있습니다(공동주택관리법 제39조). 다른 업체에 먼저 수리를 맡기면 하자 입증이 어려워질 수 있으니, 접수와 처리 결과를 확인한 뒤 진행하시기 바랍니다.");
@@ -805,11 +810,11 @@ function report(){
   var fixL=[];S.wins.forEach(function(w,i){var on=onKeys(w);if(!on.length)return;
     on.forEach(function(k){var nm=k==="nofp"?"풍지판 없음":k==="diag"?"창틀 대각선 차이(직각 불량)":cLabel(w,CHK.filter(function(c){return c.k===k})[0]);fixL.push("  · "+(S.wins.length>1?"'"+winName(w,i)+"' ":"")+nm+" → "+fixFor(k,w))})});
   if(fixL.length){L.push("확인된 원인에 따른 권장 수리는 다음과 같습니다.");L=L.concat(fixL)}
-  return{grade:"원인 "+total+"건 확인",color:"#C62828",lines:L};
+  return{grade:total?"원인 "+total+"건 확인":"특이사항 없음",color:total?"#C62828":"#2E7D32",lines:L};
 }
 function renderAI(){
   var r=report(),box=$("#aiReport");
-  if(!r){box.innerHTML='<div class="ai empty">부위별 외풍 점검에서 항목을 하나 이상 체크하면 진단 의견이 표시됩니다.</div>';return}
+  if(!r){box.innerHTML='<div class="ai empty">창호 위치를 고르거나 부위별 외풍 점검 항목을 체크하면 진단 의견이 표시됩니다.</div>';return}
   box.innerHTML='<div class="ai"><div class="hl">✨ 진단 의견<span class="grade" style="background:'+r.color+'">'+r.grade+'</span></div><ul>'+r.lines.map(function(s){var sub=/^\s+·\s/.test(s);return '<li'+(sub?' style="list-style:none;margin-left:-2px"':'')+'>'+esc(s.replace(/^\s+·\s/,"└ "))+'</li>'}).join("")+'</ul></div>';
 }
 
@@ -857,7 +862,7 @@ function buildPrint(){
    +'<div class="cv-foot">청개구리샤시 · 전화 010-2322-0949 · frogsash.co.kr</div></div>';
   // 1. 요약
   H+='<div class="pblock newpage">'+sh("1. 점검 결과 요약")+'<div class="cards">'
-   +'<div class="cardx c1"><div class="k">외풍 원인</div><div class="v">'+causes.length+'</div><div class="s">확인 항목</div></div>'
+   +'<div class="cardx c1"><div class="k">외풍 원인</div><div class="v">'+causes.length+'</div><div class="s">'+(causes.length?'확인 항목':'특이사항 없음')+'</div></div>'
    +'<div class="cardx c2"><div class="k">점검 창호</div><div class="v">'+S.wins.length+'</div><div class="s">점검 위치</div></div>'
    +'<div class="cardx c3"><div class="k">기록 사진</div><div class="v">'+photoCnt+'</div><div class="s">일반·열화상·초음파 등</div></div>'
    +'<div class="cardx c4"><div class="k">실내외 온도차</div><div class="v">'+(dT!==null?dT+'<span style="font-size:16px">℃</span>':'-')+'</div><div class="s">점검 당시</div></div></div></div>';
@@ -872,10 +877,10 @@ function buildPrint(){
    +'<tr><th>실내 환경</th><td>'+(inn.join(" · ")||"-")+'</td></tr>'+((S.env.floor||S.env.ldir)?'<tr><th>세대 위치·방향</th><td>'+esc([(S.env.floors?S.env.floors+'층 건물 ':'')+(S.env.floor?S.env.floor+'층':''),S.env.ldir?'거실 '+S.env.ldir+'향':''].filter(Boolean).join(' · '))+'</td></tr>':'')+'</table></div>';
   // 4. 창호별 현황
   H+='<div class="pblock">'+sh("4. 창호별 현황")+'<table class="tl"><thead><tr><th>번호</th><th>위치</th><th>창 종류 · 구분</th><th>방향</th><th>창틀 크기</th><th>틈 길이</th><th>설치면</th><th>풍지판</th><th>바닥 높이</th><th>원인</th></tr></thead><tbody>'
-   +S.wins.map(function(w,i){var n=causes.filter(function(x){return x.w===w}).length;return '<tr><td>'+(i+1)+'</td><td>'+esc(winName(w,i))+'</td><td class="l">'+kind(w)+'</td><td>'+esc(winDir(w)||"-")+'</td><td>'+(sz(w)?esc(w.fw+"×"+w.fh):"-")+'</td><td>'+(sz(w)?"약 "+sz(w).crack+"m":"-")+'</td><td>'+esc(w.surf||"-")+'</td><td>'+esc(w.fp||"-")+'</td><td>'+(num(w.sill)!==null?esc(w.sill)+"cm":"-")+'</td><td'+(n?' class="red"':'')+'>'+n+'건</td></tr>'}).join("")+'</tbody></table></div>';
+   +S.wins.map(function(w,i){var n=causes.filter(function(x){return x.w===w}).length;return '<tr><td>'+(i+1)+'</td><td>'+esc(winName(w,i))+'</td><td class="l">'+kind(w)+'</td><td>'+esc(winDir(w)||"-")+'</td><td>'+(sz(w)?esc(w.fw+"×"+w.fh):"-")+'</td><td>'+(sz(w)?"약 "+sz(w).crack+"m":"-")+'</td><td>'+esc(w.surf||"-")+'</td><td>'+esc(w.fp||"-")+'</td><td>'+(num(w.sill)!==null?esc(w.sill)+"cm":"-")+'</td><td'+(n?' class="red"':' style="font-size:10px;line-height:1.25"')+'>'+(n?n+'건':'특이사항<br>없음')+'</td></tr>'}).join("")+'</tbody></table></div>';
   // 5. 확인된 외풍 원인
   H+='<div class="pblock">'+sh("5. 확인된 외풍 원인")+'<table class="tl"><thead><tr><th style="width:40px">번호</th><th style="width:90px">위치</th><th>원인</th><th>권장 수리</th></tr></thead><tbody>'
-   +(causes.length?causes.map(function(x,j){return '<tr><td>'+(j+1)+'</td><td>'+esc(winName(x.w,x.i))+'</td><td class="l red">'+esc(x.n)+(x.memo?'<br><span style="color:#5b6870;font-weight:400;font-size:10.5px">'+esc(x.memo)+'</span>':'')+'</td><td class="l">'+esc(fixFor(x.k,x.w))+'</td></tr>'}).join(""):'<tr><td colspan="4">확인된 원인 없음</td></tr>')+'</tbody></table></div>';
+   +(causes.length?causes.map(function(x,j){return '<tr><td>'+(j+1)+'</td><td>'+esc(winName(x.w,x.i))+'</td><td class="l red">'+esc(x.n)+(x.memo?'<br><span style="color:#5b6870;font-weight:400;font-size:10.5px">'+esc(x.memo)+'</span>':'')+'</td><td class="l">'+esc(fixFor(x.k,x.w))+'</td></tr>'}).join(""):'<tr><td colspan="4">특이사항 없음 — 점검한 창호에서 외풍 원인이 확인되지 않았습니다.</td></tr>')+'</tbody></table></div>';
   // 6. 창호별 상세 (사진 + 표)
   S.wins.forEach(function(w,i){
     var ph=[];if(w.front)ph.push([w.front,"일반 · 전면"]);if(w.close)ph.push([w.close,"일반 · 근접"]);
@@ -886,14 +891,14 @@ function buildPrint(){
     var phB=[];for(var j=0;j<ph.length;j+=2){phB.push('<div class="iph">'+[ph[j],ph[j+1]].filter(Boolean).map(function(it){return '<div><img src="'+it[0]+'"><div class="cap">'+esc(it[1])+'</div></div>'}).join("")+'</div>')}
     var inst=[];if(w.surf)inst.push("설치면 "+w.surf);if(w.fp)inst.push("풍지판 "+w.fp);if(num(w.sill)!==null)inst.push("창틀과 바닥 높이 "+w.sill+"cm");var zz=sz(w);if(zz)inst.push("창틀 "+zz.txt);
     H+='<div class="pblock">'+(i===0?sh("6. 창호별 상세"):'')+'<div class="icard'+(phB.length?' top':'')+'" style="'+(phB.length?'':'padding-bottom:10px')+'"><div class="ihead"><div><b>'+(i+1)+'. '+esc(winName(w,i))+'</b><i>'+kind(w)+'</i></div><span>청개구리샤시 · 창호</span></div><table class="ti" style="margin-top:8px">'
-      +'<tr><th>확인된 원인</th><td>'+(my.length?my.map(function(x){return '<span class="red">'+esc(x.n)+'</span>'+(x.memo?' — '+esc(x.memo):'')}).join("<br>"):"외풍 원인이 확인되지 않았습니다.")+'</td></tr>'
-      +'<tr><th>권장 수리</th><td>'+(my.length?my.map(function(x){return esc(x.n)+' → '+esc(fixFor(x.k,x.w))}).join("<br>"):"-")+'</td></tr>'
+      +'<tr><th>확인된 원인</th><td>'+(my.length?my.map(function(x){return '<span class="red">'+esc(x.n)+'</span>'+(x.memo?' — '+esc(x.memo):'')}).join("<br>"):"특이사항 없음 — 외풍 원인이 확인되지 않았습니다.")+'</td></tr>'
+      +'<tr><th>권장 수리</th><td>'+(my.length?my.map(function(x){return esc(x.n)+' → '+esc(fixFor(x.k,x.w))}).join("<br>"):"없음")+'</td></tr>'
       +'<tr><th>설치 상태</th><td>'+(inst.length?esc(inst.join(" · ")):"-")+'</td></tr>'+(function(){var m=[],t=num(w.thMin),dv=dewPoint();if(t!==null)m.push("열화상 최저 "+t+"℃"+(dv!==null?" (실내 이슬점 "+dv+"℃"+(t<=dv?" 이하 → 결로 조건":(t-dv<=2?", 차이 "+r1(t-dv)+"℃ → 결로 직전":""))+")":""));if((w.usPos||"").trim())m.push("초음파 누기 위치(창 사이 발생기 소리): "+w.usPos.trim());var dq=w.dgOn&&diag(w);if(dq)m.push("창틀 대각선 "+dq.a+"·"+dq.b+"mm, 차이 "+dq.diff+"mm"+(dq.tilt!==null?" → 세로틀 기울기 약 "+dq.tilt+"mm"+(dq.over?" (±"+DIAG_LIM+"mm 초과)":" (±"+DIAG_LIM+"mm 이내)"):""));return m.length?'<tr><th>측정 결과</th><td>'+esc(m.join(" · "))+'</td></tr>':''})()+'</table></div></div>';
     phB.forEach(function(b,bi){H+='<div class="pblock"><div class="icard '+(bi===phB.length-1?'bot':'mid')+'">'+b+'</div></div>'});
   });
   // 7. 수리 확인표
   H+='<div class="pblock newpage">'+sh("7. 수리 확인표")+'<div style="font-size:11px;color:#5b6870;margin:-4px 0 8px">수리가 끝난 뒤, 항목마다 수리 여부를 확인하고 적는 표입니다.</div><table class="tl"><thead><tr><th style="width:40px">번호</th><th style="width:90px">위치</th><th>원인</th><th>권장 수리</th><th style="width:74px;white-space:nowrap">수리 확인</th><th style="width:72px">확인일</th></tr></thead><tbody>'
-   +(causes.length?causes.map(function(x,j){return '<tr><td>'+(j+1)+'</td><td>'+esc(winName(x.w,x.i))+'</td><td class="l">'+esc(x.n)+'</td><td class="l">'+esc(fixFor(x.k,x.w))+'</td><td class="cbx">☐</td><td></td></tr>'}).join(""):'<tr><td colspan="6">-</td></tr>')+'</tbody></table></div>';
+   +(causes.length?causes.map(function(x,j){return '<tr><td>'+(j+1)+'</td><td>'+esc(winName(x.w,x.i))+'</td><td class="l">'+esc(x.n)+'</td><td class="l">'+esc(fixFor(x.k,x.w))+'</td><td class="cbx">☐</td><td></td></tr>'}).join(""):'<tr><td colspan="6">특이사항 없음 — 수리할 항목이 없습니다.</td></tr>')+'</tbody></table></div>';
   // 8. 다음 단계 안내
   var hasNew=S.wins.some(function(w){return w.age===AGES[0]}),hasOne=S.wins.some(function(w){return w.age===AGES[1]});
   H+='<div class="pblock">'+sh("8. 다음 단계 안내")+'<table class="ti">'
@@ -916,7 +921,7 @@ function buildPrint(){
 }
 function pdfName(){var s=($("#c_site").value||"현장").replace(/[\\/:*?"<>|]+/g,"").replace(/\s+/g," ").trim().slice(0,40);return "창호외풍점검보고서_"+s+"_"+($("#c_date").value||today())+".pdf"}
 function savePDF(){
-  if(!report()){toast("부위별 외풍 점검에서 항목을 하나 이상 체크해 주세요");return}
+  if(!report()){toast("창호 위치를 고르거나 부위별 외풍 점검 항목을 체크해 주세요");return}
   if(!window.jspdf||!window.html2canvas){toast("PDF 모듈을 불러오는 중입니다. 잠시 후 다시 눌러 주세요");return}
   buildPrint();toast("PDF를 만드는 중…");
   var area=$("#print-area");area.style.cssText="display:block;position:fixed;left:-10000px;top:0;width:760px;background:#fff;color:#111";
