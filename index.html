@@ -480,11 +480,17 @@ body{padding-bottom:calc(66px + var(--safe-b))}
 /* 진단 의견: 기타 줄 바로 아래 (V4.1) */
 .ai-inline{margin:4px 0 6px;scroll-margin-top:70px}
 #aiCard.hide{display:none}
+
+/* 장비 값 칸 (V4.7) */
+.devval{margin-left:auto;display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;color:var(--ink-3)}
+.devval .db{width:58px;height:28px;font-size:14px;padding:2px 4px}
+.devval.wide{flex:1;max-width:58%}.devval.wide .db{width:100%;text-align:left;font-size:13px;padding:2px 8px}
+.devlab{display:flex;align-items:center}
 </style>
 </head>
 <body>
 <header>
-  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 4.6</span></div>
+  <div class="hbar"><h1 class="app-title"><span class="windico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h10a3 3 0 1 0-3-3"/><path d="M3 12h14a3 3 0 1 1-3 3"/><path d="M3 16h7a2.4 2.4 0 1 1-2.4 2.4"/></svg></span>창호외풍 점검앱</h1><span class="ver" id="verBadge">V 4.7</span></div>
   <div class="steps"><div class="step" id="st1"></div><div class="step" id="st2"></div><div class="step" id="st3"></div></div>
 </header>
 
@@ -615,12 +621,12 @@ function today(){var d=new Date(),z=function(n){return String(n).padStart(2,"0")
 function sz(w){var a=num(w.fw),b=num(w.fh);if(!a||!b||a<=0||b<=0)return null;var per=r1(2*(a+b)/1000),meet=/미서기|분합/.test(w.type)?r1(b/1000):0,crack=r1(per+meet);
   var area=Math.round(a*b/1e4)/100,f=function(n){return Math.round(n).toLocaleString("ko-KR")};
   return{crack:crack,area:area,txt:f(a)+"×"+f(b)+"mm(면적 "+area+"㎡, 틈 길이 약 "+crack+"m = 창틀 둘레 "+per+"m"+(meet?" + 여밈대 "+meet+"m":"")+")"}}
-function newWin(){return{id:uid(),name:"",type:"미서기 이중창",front:null,close:null,note:"",ins:"",surf:"",sill:"",fp:"",fw:"",fh:"",age:"",year:"",ph:{},chk:{},fix:[]}}
+function newWin(){return{id:uid(),name:"",type:"미서기 이중창",front:null,close:null,note:"",ins:"",surf:"",sill:"",fp:"",fw:"",fh:"",age:"",year:"",thMin:"",usPos:"",ph:{},chk:{},fix:[]}}
 function getWin(id){return S.wins.filter(function(w){return w.id===id})[0]}
 function getChk(w,k){if(!w.chk[k])w.chk[k]={on:false,memo:"",photo:null};return w.chk[k]}
 function isDouble(w){return /이중창/.test(w.type)}
 function jo(w,a,b){var c=String(w).replace(/[)\]\s'"]+$/,"").slice(-1),code=c.charCodeAt(0);var has=(code>=0xAC00&&code<=0xD7A3)?((code-0xAC00)%28>0):/[0-9]/.test(c)?/[136780]/.test(c):false;return w+(has?a:b)}
-function winName(w,i){if(w.name==="기타")return w.nameEtc||"기타";return w.name||("창호 "+(i+1))}
+function winName(w,i){if(w.name==="기타")return (w.nameEtc||"").trim()||"기타";return w.name||("창호 "+(i+1))}
 
 // 이슬점(Magnus 식)
 function dewPoint(){var t=num(S.env.tIn),rh=num(S.env.rh);if(t===null||rh===null||rh<=0||rh>100)return null;var a=17.62,b=243.12,g=Math.log(rh/100)+a*t/(b+t);return r1(b*g/(a-g))}
@@ -647,7 +653,7 @@ function renderWins(){
       +'</div><div class="loc-pad">'
       +'<div class="seg-label before" style="margin-top:0"><span class="stepno">2</span>창호 사진<span class="sizebox">가로<input class="db" inputmode="numeric" placeholder="mm" value="'+esc(w.fw)+'" data-wf="fw" data-w="'+w.id+'">×세로<input class="db" inputmode="numeric" placeholder="mm" value="'+esc(w.fh)+'" data-wf="fh" data-w="'+w.id+'"></span></div>'
       +'<div class="devgrp"><div class="devlab">일반 촬영</div><div class="devrow"><div class="photo-slot">'+photoHtml(w.front,"전면","front",w.id,"전면 촬영")+'</div><div class="photo-slot">'+photoHtml(w.close,"근접","close",w.id,"근접 촬영")+'</div></div></div>'
-      +DEVS.map(function(d){return '<div class="devgrp"><div class="devlab">'+d.n+'</div><div class="devrow"><div class="photo-slot">'+photoHtml(w.ph[d.k+"F"],"전면",d.k+"F",w.id,"전면 촬영")+'</div><div class="photo-slot">'+photoHtml(w.ph[d.k+"C"],"근접",d.k+"C",w.id,"근접 촬영")+'</div></div></div>'}).join("")
+      +DEVS.map(function(d){var extra=d.k==="th"?'<span class="devval">최저<input class="db" inputmode="decimal" placeholder="℃" value="'+esc(w.thMin||"")+'" data-wf="thMin" data-w="'+w.id+'">℃</span>':d.k==="us"?'<span class="devval wide"><input class="db" placeholder="누기 위치 (예: 여밈대 하부)" value="'+esc(w.usPos||"")+'" data-wf="usPos" data-w="'+w.id+'"></span>':'';return '<div class="devgrp"><div class="devlab">'+d.n+extra+'</div><div class="devrow"><div class="photo-slot">'+photoHtml(w.ph[d.k+"F"],"전면",d.k+"F",w.id,"전면 촬영")+'</div><div class="photo-slot">'+photoHtml(w.ph[d.k+"C"],"근접",d.k+"C",w.id,"근접 촬영")+'</div></div></div>'}).join("")
       +'<div class="seg-label before"><span class="stepno">3</span>창호 설치 상태</div>'
       +'<div class="instgrid">'
       +instSel(w,"surf","설치면",["타일","단열재","탄성코트","페인트","기타"])
@@ -719,6 +725,7 @@ function report(){
   // 원인별 기준 (2026-11-10 원문 확인: KCS 41 55 03, LHCS 41 55 02·03, 국토부 하자판정기준 제2026-360호)
   function anyOn(keys,filt){return S.wins.some(function(w){return (!filt||filt(w))&&keys.some(function(k){return k==="nofp"?w.fp==="없음":(w.chk[k]&&w.chk[k].on)})})}
   if(anyOn(["small","smallh"]))L.push("표준시방서(KCS 41 55 03)는 창짝과 창틀이 하부 8mm 이상, 상부 12mm 이상(외기에 직접 면하는 발코니창은 최소 10mm 이상) 겹치도록 정하고 있습니다. 창짝이 작게 제작되어 겹침이 이보다 부족하면 그 부분에 틈이 생겨 외풍이 들어올 수 있습니다.");
+  if(anyOn(["wide","small","smallh"],function(w){return w.age===AGES[0]}))L.push("창짝 맞물림·겹침 불량으로 여밈대와 창짝 둘레의 기밀성이 떨어진 것은 국토교통부 하자판정기준(제22조)이 하자로 보는 '기밀성이 현저히 떨어지는 등 기능상 지장'과 관련된 내용으로, 하자보수를 청구할 때 근거로 쓸 수 있습니다.");
   if(anyOn(["sag","plumb"]))L.push("창틀 수직·수평에 대해 국토교통부 하자판정기준(제22조)은 mm 기준을 따로 두지 않고, 수직·수평 불량으로 여닫기가 어렵거나 기밀성이 현저히 떨어지는 등 기능상 지장이 있으면 하자로 봅니다. 참고로 LH 전문시방서(LHCS 41 55 02·03)의 설치 허용오차는 수직·수평 각각 ±3mm이며, 현장 측정값은 기능 지장의 원인을 보여 주는 근거로 활용하시기 바랍니다.");
   if(anyOn(["mohair","nofp","ins"],function(w){return w.age===AGES[0]}))L.push("국토교통부 하자판정기준(제15조 제2항)은 모헤어·풍지판 시공 불량으로 기밀성이 현저히 낮아진 경우와 창문틀 주위에 모르타르·우레탄폼을 제대로 채우지 않은 경우를 창호 결로 하자로 봅니다. 이번에 확인된 모헤어·풍지판·창틀 주위 단열 관련 항목은 이 기준과 연결해 하자보수를 청구할 때 근거로 쓸 수 있습니다.");
   // 구축: 준공 연도별 당시 창호 단열 기준
@@ -729,6 +736,16 @@ function report(){
   });
   if(Object.keys(yDone).length)L.push("원데이로 교체한 창은 법적으로 지켜야 할 단열 기준이 따로 없어, 제품에 붙은 에너지소비효율등급 표시(2012.7 도입)로 성능을 확인하는 것이 좋습니다. ※ 창호 기준은 준공이 아닌 허가 신청 시점 기준이 적용되며, 30세대 이상 사업승인 단지는 더 엄격한 기준이 적용됐을 수 있습니다.");
   if(insGap)L.push("창틀 둘레 단열 시공이 부족하거나 없으면 틈이 없어도 창 주변 벽이 차가워져 냉기가 느껴질 수 있어, 틈으로 들어오는 외풍과 구분해서 판단했습니다.");
+  // 측정 결과: 열화상 최저 온도 vs 이슬점, 초음파 누기 위치, 실내 습도
+  var dpv=dewPoint(),dewHit=false;
+  S.wins.forEach(function(w,i){var nm=many?"'"+winName(w,i)+"' ":"";var t=num(w.thMin);
+    if(t!==null&&dpv!==null){var gap=r1(t-dpv);
+      if(gap<=0){dewHit=true;L.push(nm+"열화상 최저 온도는 "+t+"℃로, 실내 이슬점 "+dpv+"℃보다 "+Math.abs(gap)+"℃ "+(gap<0?"낮아":"같아")+" 결로가 생기는 온도입니다. 외풍이 들어오는 자리가 차가워지면서 결로 조건이 만들어진 것으로 보입니다.")}
+      else if(gap<=2){dewHit=true;L.push(nm+"열화상 최저 온도는 "+t+"℃로, 실내 이슬점 "+dpv+"℃보다 "+gap+"℃만 높아 결로 직전 수준입니다.")}
+      else L.push(nm+"열화상 최저 온도는 "+t+"℃로, 실내 이슬점 "+dpv+"℃보다 "+gap+"℃ 높아 점검 당시에는 결로 조건이 아니었습니다.")}
+    else if(t!==null)L.push(nm+"열화상 최저 온도는 "+t+"℃입니다.");
+    if((w.usPos||"").trim())L.push(nm+"초음파 카메라로 "+w.usPos.trim()+"에서 공기가 새는 신호를 확인했습니다. 외풍 원인을 뒷받침하는 측정 근거입니다.")});
+  if(dewHit){var rhv=num(S.env.rh);L.push((rhv!==null?"실내 습도 "+rhv+"%(온도 "+S.env.tIn+"℃)에서는 이슬점이 "+dpv+"℃로 높아, ":"")+"외풍으로 차가워진 창 주변에 결로가 생기기 쉬운 조건입니다. 외풍 원인을 고치는 것과 함께 환기로 실내 습도를 낮추면 결로 위험이 줄어듭니다."+(S.wins.some(function(w){return w.age===AGES[0]})?" 신축 창호 결로는 하자판정기준(제15조 제2항)에 따라 모헤어·풍지판·창틀 주위 충전 등 시공 상태와 함께 판단되므로, 이 온도 기록과 외풍 원인을 함께 제시하시기 바랍니다.":""))}
   var sized=S.wins.map(function(w,i){return{n:winName(w,i),z:sz(w)}}).filter(function(x){return x.z});
   if(sized.length){
     var szL="틈으로 들어오는 바람의 양은 틈 길이에 비례해 늘어나므로, 큰 창일수록 같은 원인이라도 외풍을 더 크게 느낄 수 있습니다.";
@@ -751,10 +768,10 @@ function renderAI(){
 }
 
 // ── 저장 (사진 제외)
-function save(){try{localStorage.setItem(CFG.STORAGE_KEY,JSON.stringify({site:$("#c_site").value,date:$("#c_date").value,req:$("#c_req").value,env:S.env,wins:S.wins.map(function(w){var c={};Object.keys(w.chk).forEach(function(k){c[k]={on:!!w.chk[k].on,memo:w.chk[k].memo||""}});return{id:w.id,name:w.name,nameEtc:w.nameEtc||"",type:w.type,note:w.note,surf:w.surf,fp:w.fp,sill:w.sill,fw:w.fw,fh:w.fh,age:w.age,year:w.year,chk:c,fix:w.fix}})}))}catch(e){}}
+function save(){try{localStorage.setItem(CFG.STORAGE_KEY,JSON.stringify({site:$("#c_site").value,date:$("#c_date").value,req:$("#c_req").value,env:S.env,wins:S.wins.map(function(w){var c={};Object.keys(w.chk).forEach(function(k){c[k]={on:!!w.chk[k].on,memo:w.chk[k].memo||""}});return{id:w.id,name:w.name,nameEtc:w.nameEtc||"",type:w.type,note:w.note,surf:w.surf,fp:w.fp,sill:w.sill,fw:w.fw,fh:w.fh,age:w.age,year:w.year,thMin:w.thMin||"",usPos:w.usPos||"",chk:c,fix:w.fix}})}))}catch(e){}}
 function load(){try{var d=JSON.parse(localStorage.getItem(CFG.STORAGE_KEY)||"null");if(!d)return false;$("#c_site").value=d.site||"";$("#c_date").value=d.date||"";$("#c_req").value=d.req||"";
   if(d.env)Object.keys(S.env).forEach(function(k){if(d.env[k]!==undefined)S.env[k]=d.env[k]});
-  S.wins=(d.wins||[]).map(function(w){var n=newWin();n.id=w.id||n.id;n.name=w.name||"";n.nameEtc=w.nameEtc||"";if(n.name&&ROOMS.indexOf(n.name)<0){n.nameEtc=n.name;n.name="기타"}n.type=w.type||n.type;n.note=w.note||"";n.surf=w.surf||"";n.fp=w.fp||"";n.sill=w.sill||"";n.fw=w.fw||"";n.fh=w.fh||"";n.age=w.age||"";if(n.age==="신축(3년 이내)")n.age="신축";n.year=w.year||"";n.fix=Array.isArray(w.fix)?w.fix:[];
+  S.wins=(d.wins||[]).map(function(w){var n=newWin();n.id=w.id||n.id;n.name=w.name||"";n.nameEtc=w.nameEtc||"";if(n.name&&ROOMS.indexOf(n.name)<0){n.nameEtc=n.name;n.name="기타"}n.type=w.type||n.type;n.note=w.note||"";n.surf=w.surf||"";n.fp=w.fp||"";n.sill=w.sill||"";n.fw=w.fw||"";n.fh=w.fh||"";n.age=w.age||"";if(n.age==="신축(3년 이내)")n.age="신축";n.year=w.year||"";n.thMin=w.thMin||"";n.usPos=w.usPos||"";n.fix=Array.isArray(w.fix)?w.fix:[];
     Object.keys(w.chk||{}).forEach(function(k){var y=getChk(n,k);y.on=!!w.chk[k].on;y.memo=w.chk[k].memo||""});return n});
   return S.wins.length>0}catch(e){return false}}
 function syncEnvInputs(){document.querySelectorAll("[data-env]").forEach(function(el){var k=el.dataset.env;if(el.type==="checkbox")el.checked=!!S.env[k];else el.value=S.env[k]||""});$("#wxSrc").textContent=S.env.src||"";updateDew()}
@@ -816,16 +833,16 @@ function buildPrint(){
   // 6. 창호별 상세 (사진 + 표)
   S.wins.forEach(function(w,i){
     var ph=[];if(w.front)ph.push([w.front,"일반 · 전면"]);if(w.close)ph.push([w.close,"일반 · 근접"]);
-    DEVS.forEach(function(d){if(w.ph[d.k+"F"])ph.push([w.ph[d.k+"F"],d.n+" · 전면"]);if(w.ph[d.k+"C"])ph.push([w.ph[d.k+"C"],d.n+" · 근접"])});
+    DEVS.forEach(function(d){var tag=d.k==="th"&&num(w.thMin)!==null?" · 최저 "+w.thMin+"℃":d.k==="us"&&(w.usPos||"").trim()?" · "+w.usPos.trim():"";if(w.ph[d.k+"F"])ph.push([w.ph[d.k+"F"],d.n+" · 전면"+tag]);if(w.ph[d.k+"C"])ph.push([w.ph[d.k+"C"],d.n+" · 근접"])});
     CHK.forEach(function(c){var x=w.chk[c.k];if(x&&x.photo)ph.push([x.photo,cLabel(w,c)+(x.on?"":" (참고)")])});
     var my=causes.filter(function(x){return x.w===w});
     // 제목 + 표를 한 덩어리로(표가 혼자 다음 쪽으로 넘어가지 않게), 사진은 그 아래
     var phB=[];for(var j=0;j<ph.length;j+=2){phB.push('<div class="iph">'+[ph[j],ph[j+1]].filter(Boolean).map(function(it){return '<div><img src="'+it[0]+'"><div class="cap">'+esc(it[1])+'</div></div>'}).join("")+'</div>')}
     var inst=[];if(w.surf)inst.push("설치면 "+w.surf);if(w.fp)inst.push("풍지판 "+w.fp);if(num(w.sill)!==null)inst.push("창틀과 바닥 높이 "+w.sill+"cm");var zz=sz(w);if(zz)inst.push("창틀 "+zz.txt);
-    H+='<div class="pblock'+(i===0?' newpage':'')+'">'+(i===0?sh("6. 창호별 상세"):'')+'<div class="icard'+(phB.length?' top':'')+'" style="'+(phB.length?'':'padding-bottom:10px')+'"><div class="ihead"><div><b>'+(i+1)+'. '+esc(winName(w,i))+'</b><i>'+kind(w)+'</i></div><span>청개구리샤시 · 창호</span></div><table class="ti" style="margin-top:8px">'
+    H+='<div class="pblock">'+(i===0?sh("6. 창호별 상세"):'')+'<div class="icard'+(phB.length?' top':'')+'" style="'+(phB.length?'':'padding-bottom:10px')+'"><div class="ihead"><div><b>'+(i+1)+'. '+esc(winName(w,i))+'</b><i>'+kind(w)+'</i></div><span>청개구리샤시 · 창호</span></div><table class="ti" style="margin-top:8px">'
       +'<tr><th>확인된 원인</th><td>'+(my.length?my.map(function(x){return '<span class="red">'+esc(x.n)+'</span>'+(x.memo?' — '+esc(x.memo):'')}).join("<br>"):"외풍 원인이 확인되지 않았습니다.")+'</td></tr>'
       +'<tr><th>권장 수리</th><td>'+(my.length?my.map(function(x){return esc(x.n)+' → '+esc(fixFor(x.k,x.w))}).join("<br>"):"-")+'</td></tr>'
-      +'<tr><th>설치 상태</th><td>'+(inst.length?esc(inst.join(" · ")):"-")+'</td></tr></table></div></div>';
+      +'<tr><th>설치 상태</th><td>'+(inst.length?esc(inst.join(" · ")):"-")+'</td></tr>'+(function(){var m=[],t=num(w.thMin),dv=dewPoint();if(t!==null)m.push("열화상 최저 "+t+"℃"+(dv!==null?" (실내 이슬점 "+dv+"℃"+(t<=dv?" 이하 → 결로 조건":(t-dv<=2?", 차이 "+r1(t-dv)+"℃ → 결로 직전":""))+")":""));if((w.usPos||"").trim())m.push("초음파 누기 위치: "+w.usPos.trim());return m.length?'<tr><th>측정 결과</th><td>'+esc(m.join(" · "))+'</td></tr>':''})()+'</table></div></div>';
     phB.forEach(function(b,bi){H+='<div class="pblock"><div class="icard '+(bi===phB.length-1?'bot':'mid')+'">'+b+'</div></div>'});
   });
   // 7. 수리 확인표
@@ -911,7 +928,7 @@ document.addEventListener("DOMContentLoaded",function(){
   $("#c_site").addEventListener("input",function(){updateSteps();save()});
   $("#c_date").addEventListener("input",save);
   $("#c_req").addEventListener("input",function(){renderAI();updateSteps();save()});
-  $("#btnAddWin").addEventListener("click",function(){S.wins.push(newWin());renderWins();save();toast("창호를 추가했습니다")});
+  $("#btnAddWin").addEventListener("click",function(){var nw=newWin(),f=S.wins[0];if(f){nw.age=f.age||"";nw.year=f.year||""}S.wins.push(nw);renderWins();save();toast("창호를 추가했습니다")});
   $("#goAi").addEventListener("click",function(){renderAI();var el=$("#aiCard");el.classList.remove("hide");var y=el.getBoundingClientRect().top+window.pageYOffset-70;window.scrollTo(0,Math.max(0,y));el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash")});
   $("#btnSave").addEventListener("click",savePDF);
   $("#btnReset").addEventListener("click",function(){if(!confirm("모든 입력을 지우고 새로 시작할까요?"))return;localStorage.removeItem(CFG.STORAGE_KEY);S={env:{tOut:"",wind:"",wdir:"",tIn:"",rh:"",fan:false,src:""},wins:[newWin()]};$("#c_site").value="";$("#c_req").value="";$("#c_date").value=today();syncEnvInputs();renderWins();renderAI();toast("초기화되었습니다");autoWeather()});
